@@ -17,4 +17,8 @@ app.use(express.static('uploads'));
 // TODO: global error handler
 // app.use(require('./middleware/errorHandler'));
 
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'API funcionando correctamente 🚀' });
+});
+
 module.exports = app;
