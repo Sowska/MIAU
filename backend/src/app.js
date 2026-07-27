@@ -13,6 +13,8 @@ app.use(express.static('uploads'));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+// Marker routes — contribution routes are nested inside markerRoutes
+// as /api/markers/:id/contributions (see routes/markerRoutes.js)
 app.use('/api/markers', require('./routes/markerRoutes'));
 
 app.get('/api/health', (req, res) => {
