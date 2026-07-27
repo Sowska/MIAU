@@ -19,7 +19,9 @@ vi.mock('react-leaflet', () => {
     }
     return null;
   };
-  return { MapContainer, TileLayer, useMapEvents };
+  const Marker = ({ children }) => <div data-testid="marker">{children}</div>;
+  const Popup = ({ children }) => <div data-testid="popup">{children}</div>;
+  return { MapContainer, TileLayer, useMapEvents, Marker, Popup };
 });
 
 // Mock leaflet
@@ -51,6 +53,11 @@ vi.mock('../../api/markers', () => ({
 const mockToken = { current: null };
 vi.mock('../../store/authStore', () => ({
   default: (selector) => selector({ token: mockToken.current }),
+}));
+
+// Mock filter store (used by MarkerLayer)
+vi.mock('../../store/filterStore', () => ({
+  default: (selector) => selector({ categories: [], author: '', startDate: null, endDate: null }),
 }));
 
 import { getMarkers } from '../../api/markers';

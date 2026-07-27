@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { getMarkers } from '../../api/markers';
 import useAuthStore from '../../store/authStore';
+import MarkerLayer from './MarkerLayer';
 
 // Fix Leaflet default icon paths broken by bundlers (Vite/Webpack)
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
@@ -86,7 +87,7 @@ export default function MapView({ onMapClick }) {
       >
         <TileLayer url={OSM_TILE_URL} attribution={OSM_ATTRIBUTION} />
         <MapClickHandler onMapClick={onMapClick} />
-        {/* MarkerLayer will be rendered here in task 11.2 */}
+        <MarkerLayer markers={markers} />
       </MapContainer>
       {error && (
         <div className="absolute top-4 left-4 bg-red-100 text-red-700 px-4 py-2 rounded shadow" role="alert">
