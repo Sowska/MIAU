@@ -5,6 +5,7 @@ const router = express.Router();
 const { listMarkers, getMarker, createMarker, updateMarker, deleteMarker } = require('../controllers/markerController');
 const { authenticate } = require('../middleware/auth');
 const upload = require('../middleware/upload');
+const contributionRoutes = require('./contributionRoutes');
 
 // GET /api/markers — list all non-deleted markers (public)
 router.get('/', listMarkers);
@@ -20,5 +21,8 @@ router.put('/:id', authenticate, upload.single('image'), updateMarker);
 
 // DELETE /api/markers/:id — soft-delete marker (protected)
 router.delete('/:id', authenticate, deleteMarker);
+
+// Nested contribution routes: /api/markers/:id/contributions
+router.use('/:id/contributions', contributionRoutes);
 
 module.exports = router;

@@ -13,7 +13,7 @@ app.use(express.static('uploads'));
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
-// app.use('/api/markers', require('./routes/markerRoutes'));
+app.use('/api/markers', require('./routes/markerRoutes'));
 
 app.get('/api/health', (req, res) => {
   const dbState = mongoose.connection.readyState;
