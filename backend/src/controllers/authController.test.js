@@ -78,7 +78,7 @@ describe('authController — register', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should hash password with 12 rounds and return 201 with token, username, email', async () => {
+  it('should hash password with 12 rounds and return 201 with token and user object', async () => {
     findOneSpy.mockResolvedValueOnce(null); // email check
     findOneSpy.mockResolvedValueOnce(null); // username check
     hashSpy.mockResolvedValueOnce('hashed_password');
@@ -104,8 +104,7 @@ describe('authController — register', () => {
     expect(res.status).toHaveBeenCalledWith(201);
     const responseBody = res.json.mock.calls[0][0];
     expect(responseBody).toHaveProperty('token');
-    expect(responseBody.username).toBe('testuser');
-    expect(responseBody.email).toBe('test@example.com');
+    expect(responseBody.user).toEqual({ _id: 'user123', username: 'testuser', email: 'test@example.com' });
 
     // Verify token payload
     const decoded = jwt.verify(responseBody.token, TEST_SECRET);
@@ -176,7 +175,7 @@ describe('authController — login', () => {
     expect(next).not.toHaveBeenCalled();
   });
 
-  it('should return 200 with token, username, email on valid credentials', async () => {
+  it('should return 200 with token and user object on valid credentials', async () => {
     findOneSpy.mockResolvedValueOnce({
       _id: 'user456',
       username: 'loggeduser',
@@ -194,8 +193,7 @@ describe('authController — login', () => {
     expect(res.status).toHaveBeenCalledWith(200);
     const responseBody = res.json.mock.calls[0][0];
     expect(responseBody).toHaveProperty('token');
-    expect(responseBody.username).toBe('loggeduser');
-    expect(responseBody.email).toBe('logged@example.com');
+    expect(responseBody.user).toEqual({ _id: 'user456', username: 'loggeduser', email: 'logged@example.com' });
 
     // Verify token payload
     const decoded = jwt.verify(responseBody.token, TEST_SECRET);

@@ -1,3 +1,231 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    /* Core */
+    --background: 210 40% 98%;
+    --foreground: 222 47% 11%;
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 11%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 11%;
+    --primary: 338 68% 54%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 210 40% 96%;
+    --secondary-foreground: 222 47% 11%;
+    --muted: 210 40% 96%;
+    --muted-foreground: 215 16% 47%;
+    --accent: 214 32% 91%;
+    --accent-foreground: 222 47% 11%;
+    --destructive: 352 65% 60%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 214 32% 91%;
+    --input: 214 32% 91%;
+    --ring: 338 68% 54%;
+    --radius: 0.5rem;
+
+    /* Chart — CartoColors SunsetDark */
+    --chart-1: 42 95% 80%;
+    --chart-2: 22 93% 72%;
+    --chart-3: 6 82% 69%;
+    --chart-4: 352 75% 58%;
+    --chart-5: 338 68% 54%;
+
+    /* Sidebar */
+    --sidebar: 210 40% 98%;
+    --sidebar-foreground: 222 47% 11%;
+    --sidebar-primary: 310 63% 27%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 214 32% 91%;
+    --sidebar-accent-foreground: 222 47% 11%;
+    --sidebar-border: 214 32% 91%;
+    --sidebar-ring: 338 68% 54%;
+  }
+
+  .dark {
+    /* Core */
+    --background: 222 47% 11%;
+    --foreground: 210 40% 96%;
+    --card: 217 33% 17%;
+    --card-foreground: 210 40% 96%;
+    --popover: 217 33% 17%;
+    --popover-foreground: 210 40% 96%;
+    --primary: 340 72% 62%;
+    --primary-foreground: 210 40% 98%;
+    --secondary: 217 33% 25%;
+    --secondary-foreground: 210 40% 96%;
+    --muted: 217 33% 25%;
+    --muted-foreground: 215 20% 65%;
+    --accent: 215 25% 35%;
+    --accent-foreground: 210 40% 96%;
+    --destructive: 6 74% 69%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 217 33% 25%;
+    --input: 215 25% 35%;
+    --ring: 340 72% 62%;
+
+    /* Chart — CartoColors SunsetDark (consistent across modes) */
+    --chart-1: 42 95% 80%;
+    --chart-2: 22 93% 72%;
+    --chart-3: 6 82% 69%;
+    --chart-4: 352 75% 58%;
+    --chart-5: 338 68% 54%;
+
+    /* Sidebar */
+    --sidebar: 217 33% 17%;
+    --sidebar-foreground: 210 40% 96%;
+    --sidebar-primary: 338 68% 54%;
+    --sidebar-primary-foreground: 210 40% 98%;
+    --sidebar-accent: 217 33% 25%;
+    --sidebar-accent-foreground: 210 40% 96%;
+    --sidebar-border: 217 33% 25%;
+    --sidebar-ring: 340 72% 62%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: Inter, system-ui, -apple-system, sans-serif;
+  }
+}
+
+/* ─── Animations ──────────────────────────────────────────────────────────── */
+
+@keyframes toast-progress {
+  from {
+    width: 100%;
+  }
+  to {
+    width: 0%;
+  }
+}
+
+@keyframes bounce-subtle {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
+  30% {
+    transform: translateY(-8px) scale(1.05);
+  }
+  50% {
+    transform: translateY(-2px) scale(1.02);
+  }
+  70% {
+    transform: translateY(-4px) scale(1.03);
+  }
+}
+
+@keyframes marker-drop-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.5);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(4px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes marker-shrink-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+}
+
+@keyframes marker-fade-out {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes marker-fade-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-down {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes scale-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Leaflet marker animation classes */
+.leaflet-marker-icon.marker-drop-in {
+  animation: marker-drop-in 400ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.leaflet-marker-icon.marker-bounce {
+  animation: bounce-subtle 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.leaflet-marker-icon.marker-shrink-out {
+  animation: marker-shrink-out 200ms ease-out forwards;
+}
+
+.leaflet-marker-icon.marker-fade-out {
+  animation: marker-fade-out 200ms ease-out forwards;
+}
+
+.leaflet-marker-icon.marker-fade-in {
+  animation: marker-fade-in 200ms ease-out forwards;
+}
+
+.leaflet-marker-icon.marker-hover {
+  transform: scale(1.15);
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+  transition: transform 150ms ease-out, filter 150ms ease-out;
+}
+
+.leaflet-marker-icon {
+  transition: transform 150ms ease-out, filter 150ms ease-out;
+}

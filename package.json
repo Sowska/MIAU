@@ -1,8 +1,22 @@
 {
+  "name": "miau",
+  "version": "1.0.0",
+  "private": true,
+  "description": "MIAU — Urban Art Map (monorepo root)",
+  "scripts": {
+    "dev": "concurrently -n backend,frontend -c blue,magenta \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\"",
+    "start:backend": "npm start --prefix backend",
+    "start:frontend": "npm run dev --prefix frontend",
+    "build": "npm run build --prefix frontend",
+    "test": "concurrently \"npm test --prefix backend\" \"npm test --prefix frontend\""
+  },
   "dependencies": {
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "mongodb": "^7.5.0"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.4"
   }
 }

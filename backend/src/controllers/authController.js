@@ -41,7 +41,7 @@ async function register(req, res, next) {
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
-    return res.status(201).json({ token, username: user.username, email: user.email });
+    return res.status(201).json({ token, user: { _id: user._id, username: user.username, email: user.email } });
   } catch (err) {
     next(err);
   }
@@ -75,7 +75,7 @@ async function login(req, res, next) {
       { expiresIn: process.env.JWT_EXPIRES_IN || '7d' }
     );
 
-    return res.status(200).json({ token, username: user.username, email: user.email });
+    return res.status(200).json({ token, user: { _id: user._id, username: user.username, email: user.email } });
   } catch (err) {
     next(err);
   }
