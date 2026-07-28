@@ -50,7 +50,7 @@ El proyecto sigue una arquitectura MERN (MongoDB, Express, React, Node.js) con u
 - Mapa interactivo con marcadores geolocalizados de arte urbano.
 - Filtrado por categoria, autor y rango de fechas (en el cliente, sin llamadas extra al servidor).
 - Registro e inicio de sesion con JWT.
-- Creacion, edicion y eliminacion suave de marcadores.
+- Creacion, edicion y eliminacion (soft delete) de marcadores.
 - Carga de imagenes con vista previa y almacenamiento en S3.
 - Sistema de contribuciones comunitarias (sugerencias de otros usuarios sobre marcadores existentes).
 - Diseno responsive y mobile-first.
