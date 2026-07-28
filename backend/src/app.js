@@ -28,7 +28,7 @@ app.get('/api/health', (req, res) => {
   const dbState = mongoose.connection.readyState;
   const dbStatus = ['disconnected', 'connected', 'connecting', 'disconnecting'][dbState] ?? 'unknown';
   res.json({
-    status: 'API funcionando correctamente 🚀',
+    status: 'API funcionando correctamente',
     db: dbStatus,
   });
 });
