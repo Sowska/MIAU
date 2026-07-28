@@ -89,7 +89,7 @@ export default function Navbar({
       ]
         .filter(Boolean)
         .join(' ')}
-      aria-label="Main navigation"
+      aria-label="Navegación principal"
     >
       <div className="h-full px-4 flex items-center justify-between max-w-screen-2xl mx-auto">
         {/* Left: Brand */}
@@ -145,16 +145,16 @@ export default function Navbar({
                   {user.username || user.email}
                 </span>
                 <Button variant="ghost" size="sm" onClick={onLogout}>
-                  Log out
+                  Cerrar sesión
                 </Button>
               </>
             ) : (
               <>
                 <Button variant="ghost" size="sm" onClick={onLogin}>
-                  Log in
+                  Iniciar sesión
                 </Button>
                 <Button variant="primary" size="sm" onClick={onLogin}>
-                  Register
+                  Registrarse
                 </Button>
               </>
             )}
@@ -167,7 +167,7 @@ export default function Navbar({
             onClick={() => setMobileMenuOpen((prev) => !prev)}
             aria-expanded={mobileMenuOpen}
             aria-controls="mobile-nav-menu"
-            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-label={mobileMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
           >
             {mobileMenuOpen ? <CloseIcon /> : <MenuIcon />}
           </button>
@@ -222,7 +222,7 @@ export default function Navbar({
                       if (onLogout) onLogout();
                     }}
                   >
-                    Log out
+                    Cerrar sesión
                   </Button>
                 </>
               ) : (
@@ -236,7 +236,7 @@ export default function Navbar({
                       if (onLogin) onLogin();
                     }}
                   >
-                    Log in
+                    Iniciar sesión
                   </Button>
                   <Button
                     variant="primary"
@@ -247,7 +247,7 @@ export default function Navbar({
                       if (onLogin) onLogin();
                     }}
                   >
-                    Register
+                    Registrarse
                   </Button>
                 </div>
               )}

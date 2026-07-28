@@ -64,7 +64,7 @@ import Input from './Input';
  * @param {string} [props.className]
  */
 export default function SearchBar({
-  placeholder = 'Search markers or places...',
+  placeholder = 'Buscar marcadores o lugares...',
   suggestions = [],
   onSearch,
   onChange,
@@ -208,7 +208,7 @@ export default function SearchBar({
           activeIndex >= 0 ? `suggestion-${activeIndex}` : undefined
         }
         aria-autocomplete="list"
-        aria-label="Search markers or places"
+        aria-label="Buscar marcadores o lugares"
         leftIcon={
           <SearchIcon />
         }
@@ -217,7 +217,7 @@ export default function SearchBar({
             <button
               type="button"
               onClick={handleClear}
-              aria-label="Clear search"
+              aria-label="Limpiar búsqueda"
               className="p-1 rounded-sm hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               <ClearIcon />
@@ -233,7 +233,7 @@ export default function SearchBar({
           ref={listRef}
           id={listboxId}
           role="listbox"
-          aria-label="Search suggestions"
+          aria-label="Sugerencias de búsqueda"
           className="absolute z-50 mt-1 w-full max-h-64 overflow-y-auto rounded-lg border border-border bg-card/95 backdrop-blur-sm shadow-lg"
         >
           {loading && (
@@ -259,7 +259,7 @@ export default function SearchBar({
                   d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
                 />
               </svg>
-              Searching...
+              Buscando...
             </li>
           )}
 
@@ -295,7 +295,7 @@ export default function SearchBar({
 
           {!loading && !hasSuggestions && value.length > 0 && (
             <li className="px-3 py-3 text-sm text-muted-foreground text-center">
-              No results found
+              Sin resultados
             </li>
           )}
         </ul>

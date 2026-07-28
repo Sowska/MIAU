@@ -63,11 +63,10 @@ export default function NotFoundView({ onNavigateHome }) {
 
       {/* Message */}
       <h2 className="text-xl font-semibold text-foreground mb-2">
-        Location not found
+        Ubicación no encontrada
       </h2>
       <p className="text-sm text-muted-foreground text-center max-w-xs mb-8">
-        The page you're looking for doesn't exist on our map.
-        It may have been moved or the URL might be incorrect.
+        La página que buscás no existe en nuestro mapa. Puede que haya sido movida o la URL sea incorrecta.
       </p>
 
       {/* Actions */}
@@ -93,14 +92,14 @@ export default function NotFoundView({ onNavigateHome }) {
               </svg>
             }
           >
-            Back to Map
+            Volver al mapa
           </Button>
         )}
         <Button
           variant="outline"
           onClick={() => window.history.back()}
         >
-          Go Back
+          Volver atrás
         </Button>
       </div>
 

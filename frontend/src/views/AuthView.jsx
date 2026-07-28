@@ -38,20 +38,20 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
 
   function validate() {
     const errors = {};
-    if (!email.trim()) errors.email = 'Email is required';
-    else if (!/\S+@\S+\.\S+/.test(email)) errors.email = 'Invalid email format';
+    if (!email.trim()) errors.email = 'El correo es obligatorio';
+    else if (!/\S+@\S+\.\S+/.test(email)) errors.email = 'Formato de correo inválido';
 
     if (mode === 'register' && !username.trim()) {
-      errors.username = 'Username is required';
+      errors.username = 'El nombre de usuario es obligatorio';
     }
 
-    if (!password) errors.password = 'Password is required';
-    else if (password.length < 6) errors.password = 'Minimum 6 characters';
+    if (!password) errors.password = 'La contraseña es obligatoria';
+    else if (password.length < 6) errors.password = 'Mínimo 6 caracteres';
 
     if (mode === 'register') {
-      if (!confirmPassword) errors.confirmPassword = 'Please confirm your password';
+      if (!confirmPassword) errors.confirmPassword = 'Confirmá tu contraseña';
       else if (password !== confirmPassword)
-        errors.confirmPassword = 'Passwords do not match';
+        errors.confirmPassword = 'Las contraseñas no coinciden';
     }
 
     return errors;
@@ -76,7 +76,7 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
 
       const { token, user } = res.data;
       login(token, user);
-      addToast('success', mode === 'login' ? 'Welcome back!' : 'Account created successfully');
+      addToast('success', mode === 'login' ? '¡Bienvenido de nuevo!' : 'Cuenta creada correctamente');
 
       if (onSuccess) onSuccess();
     } catch (err) {
@@ -84,8 +84,8 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
         err.response?.data?.error ||
         err.response?.data?.message ||
         (mode === 'login'
-          ? 'Invalid credentials. Please try again.'
-          : 'Registration failed. Please try again.');
+          ? 'Credenciales inválidas. Intentá de nuevo.'
+          : 'Registro fallido. Intentá de nuevo.');
       setError(message);
     } finally {
       setLoading(false);
@@ -116,19 +116,19 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
           {/* Brand */}
           <div className="pt-6 sm:pt-8 pb-2 text-center">
             <h1 className="text-3xl font-bold text-foreground tracking-tight">MIAU</h1>
-            <p className="text-sm text-muted-foreground mt-1">Urban Art Map</p>
+            <p className="text-sm text-muted-foreground mt-1">Mapa de Arte Urbano</p>
           </div>
 
           {/* Form content */}
           <div className="px-6 pb-2">
             <CardHeader className="text-center px-0">
               <CardTitle as="h2">
-                {mode === 'login' ? 'Welcome back' : 'Create account'}
+                {mode === 'login' ? '¡Bienvenido de nuevo!' : 'Crear cuenta'}
               </CardTitle>
               <CardDescription>
                 {mode === 'login'
-                  ? 'Sign in to contribute to the urban art map'
-                  : 'Join the community and start mapping art'}
+                  ? 'Iniciá sesión para contribuir al mapa de arte urbano'
+                  : 'Unite a la comunidad y empezá a mapear arte'}
               </CardDescription>
             </CardHeader>
 
@@ -146,7 +146,7 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
                 ].join(' ')}
                 aria-pressed={mode === 'login'}
               >
-                Log in
+                Iniciar sesión
               </button>
               <button
                 type="button"
@@ -160,19 +160,19 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
                 ].join(' ')}
                 aria-pressed={mode === 'register'}
               >
-                Register
+                Registrarse
               </button>
             </div>
 
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-4" noValidate>
-              <FormField label="Email" htmlFor="auth-email" error={fieldErrors.email}>
+              <FormField label="Correo electrónico" htmlFor="auth-email" error={fieldErrors.email}>
                 <Input
                   id="auth-email"
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="you@example.com"
+                  placeholder="tu@correo.com"
                   autoComplete="email"
                   error={!!fieldErrors.email}
                   aria-invalid={!!fieldErrors.email}
@@ -181,13 +181,13 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
               </FormField>
 
               {mode === 'register' && (
-                <FormField label="Username" htmlFor="auth-username" error={fieldErrors.username}>
+                <FormField label="Nombre de usuario" htmlFor="auth-username" error={fieldErrors.username}>
                   <Input
                     id="auth-username"
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Choose a username"
+                    placeholder="Elegí un nombre de usuario"
                     autoComplete="username"
                     error={!!fieldErrors.username}
                     aria-invalid={!!fieldErrors.username}
@@ -196,7 +196,7 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
                 </FormField>
               )}
 
-              <FormField label="Password" htmlFor="auth-password" error={fieldErrors.password}>
+              <FormField label="Contraseña" htmlFor="auth-password" error={fieldErrors.password}>
                 <Input
                   id="auth-password"
                   type="password"
@@ -211,7 +211,7 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
               </FormField>
 
               {mode === 'register' && (
-                <FormField label="Confirm Password" htmlFor="auth-confirm-password" error={fieldErrors.confirmPassword}>
+                <FormField label="Confirmar contraseña" htmlFor="auth-confirm-password" error={fieldErrors.confirmPassword}>
                   <Input
                     id="auth-confirm-password"
                     type="password"
@@ -231,20 +231,20 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
               )}
 
               <Button type="submit" variant="primary" fullWidth loading={loading} disabled={loading}>
-                {mode === 'login' ? 'Sign In' : 'Create Account'}
+                {mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta'}
               </Button>
             </form>
 
             {/* Switch mode */}
             <div className="py-4 text-center">
               <p className="text-sm text-muted-foreground">
-                {mode === 'login' ? "Don't have an account?" : 'Already have an account?'}{' '}
+                {mode === 'login' ? '¿No tenés una cuenta?' : '¿Ya tenés una cuenta?'}{' '}
                 <button
                   type="button"
                   onClick={switchMode}
                   className="text-primary font-medium hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm"
                 >
-                  {mode === 'login' ? 'Register' : 'Log in'}
+                  {mode === 'login' ? 'Registrarse' : 'Iniciar sesión'}
                 </button>
               </p>
             </div>
@@ -258,7 +258,7 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
                 onClick={onNavigateHome}
                 className="text-sm text-muted-foreground hover:text-foreground transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm px-2 py-1"
               >
-                ← Back to map
+                ← Volver al mapa
               </button>
             </div>
           )}

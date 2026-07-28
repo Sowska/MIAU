@@ -115,7 +115,7 @@ export default function MarkerPopup({
         {/* Author */}
         {author && (
           <p className="text-xs text-muted-foreground truncate">
-            By {author}
+            Por {author}
           </p>
         )}
 
@@ -137,7 +137,7 @@ export default function MarkerPopup({
             onClick={() => onViewDetails(marker)}
             className="text-primary hover:text-primary/80"
           >
-            View Details
+            Ver detalles
           </Button>
         </div>
       )}

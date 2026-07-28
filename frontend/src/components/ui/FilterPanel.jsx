@@ -121,7 +121,7 @@ export default function FilterPanel({
       ]
         .filter(Boolean)
         .join(' ')}
-      aria-label="Filter markers"
+      aria-label="Filtrar marcadores"
       onClick={(e) => e.stopPropagation()}
       onDoubleClick={(e) => e.stopPropagation()}
       onMouseDown={(e) => e.stopPropagation()}
@@ -129,7 +129,7 @@ export default function FilterPanel({
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <h2 className="text-sm font-semibold text-foreground">Filters</h2>
+          <h2 className="text-sm font-semibold text-foreground">Filtros</h2>
           {activeFilterCount > 0 && (
             <span className="inline-flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full bg-primary text-primary-foreground text-xs font-medium">
               {activeFilterCount}
@@ -142,16 +142,16 @@ export default function FilterPanel({
               type="button"
               onClick={onClearAll}
               className="text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-              aria-label="Clear all filters"
+              aria-label="Limpiar todos los filtros"
             >
-              Clear
+              Limpiar
             </button>
           )}
           <button
             type="button"
             onClick={handleToggle}
             aria-expanded={!isCollapsed}
-            aria-label={isCollapsed ? 'Expand filters' : 'Collapse filters'}
+            aria-label={isCollapsed ? 'Expandir filtros' : 'Colapsar filtros'}
             className="p-1.5 rounded-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <svg
@@ -177,7 +177,7 @@ export default function FilterPanel({
       {!isCollapsed && (
         <div className="p-4 space-y-5">
           {/* Category Checkboxes */}
-          <FilterSection label="Category">
+          <FilterSection label="Categoría">
             <div className="space-y-2">
               {categories.map((cat) => (
                 <label
@@ -199,26 +199,26 @@ export default function FilterPanel({
           </FilterSection>
 
           {/* Author Search */}
-          <FilterSection label="Author">
+          <FilterSection label="Artista">
             <Input
               type="text"
               size="sm"
-              placeholder="Search by author..."
+              placeholder="Buscar por artista..."
               value={author}
               onChange={(e) => onAuthorChange && onAuthorChange(e.target.value)}
-              aria-label="Filter by author name"
+              aria-label="Filtrar por nombre de artista"
             />
           </FilterSection>
 
           {/* Date Range */}
-          <FilterSection label="Date range">
+          <FilterSection label="Rango de fechas">
             <div className="space-y-2">
               <div>
                 <label
                   htmlFor="filter-start"
                   className="block text-xs text-muted-foreground mb-1"
                 >
-                  From
+                  Desde
                 </label>
                 <Input
                   id="filter-start"
@@ -235,7 +235,7 @@ export default function FilterPanel({
                   htmlFor="filter-end"
                   className="block text-xs text-muted-foreground mb-1"
                 >
-                  To
+                  Hasta
                 </label>
                 <Input
                   id="filter-end"
@@ -259,7 +259,7 @@ export default function FilterPanel({
               onClick={onClearAll}
               disabled={activeFilterCount === 0}
             >
-              Clear All Filters
+              Limpiar todos los filtros
             </Button>
           </div>
         </div>

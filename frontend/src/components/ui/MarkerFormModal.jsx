@@ -160,8 +160,8 @@ export default function MarkerFormModal({
 
   function validate() {
     const newErrors = {};
-    if (!title.trim()) newErrors.title = 'Title is required';
-    if (!category) newErrors.category = 'Category is required';
+    if (!title.trim()) newErrors.title = 'El título es obligatorio';
+    if (!category) newErrors.category = 'La categoría es obligatoria';
     return newErrors;
   }
 
@@ -190,7 +190,7 @@ export default function MarkerFormModal({
       setInternalLoading(true);
       try {
         await onSubmit(formData);
-        setSuccessMessage(isEdit ? 'Marker updated' : 'Marker created');
+        setSuccessMessage(isEdit ? 'Marcador actualizado' : 'Marcador creado');
         setTimeout(() => onClose(), 800);
       } catch {
         // Error handled externally or via externalError prop
@@ -235,12 +235,12 @@ export default function MarkerFormModal({
             id="marker-form-title"
             className="text-lg font-semibold text-foreground"
           >
-            {isEdit ? 'Edit Marker' : 'Create Marker'}
+            {isEdit ? 'Editar marcador' : 'Crear marcador'}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close dialog"
+            aria-label="Cerrar diálogo"
             className="p-2 -mr-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <svg
@@ -265,7 +265,7 @@ export default function MarkerFormModal({
         <form onSubmit={handleSubmit} className="p-5 space-y-4" noValidate>
           {/* Title */}
           <FormField
-            label="Title"
+            label="Título"
             htmlFor="modal-title"
             error={errors.title}
             required
@@ -279,13 +279,13 @@ export default function MarkerFormModal({
               error={!!errors.title}
               aria-invalid={!!errors.title}
               aria-describedby={errors.title ? 'modal-title-error' : undefined}
-              placeholder="Artwork title"
+              placeholder="Título de la obra"
             />
           </FormField>
 
           {/* Category */}
           <FormField
-            label="Category"
+            label="Categoría"
             htmlFor="modal-category"
             error={errors.category}
             required
@@ -305,7 +305,7 @@ export default function MarkerFormModal({
                   : 'border-input',
               ].join(' ')}
             >
-              <option value="">Select a category</option>
+              <option value="">Seleccioná una categoría</option>
               {CATEGORIES.map((cat) => (
                 <option key={cat} value={cat}>
                   {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -315,13 +315,13 @@ export default function MarkerFormModal({
           </FormField>
 
           {/* Description */}
-          <FormField label="Description" htmlFor="modal-description">
+          <FormField label="Descripción" htmlFor="modal-description">
             <textarea
               id="modal-description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={3}
-              placeholder="Describe this artwork..."
+              placeholder="Describí esta obra..."
               className={[
                 'w-full px-3 py-2 text-sm rounded-md border border-input',
                 'bg-background text-foreground placeholder:text-muted-foreground',
@@ -332,18 +332,18 @@ export default function MarkerFormModal({
           </FormField>
 
           {/* Author */}
-          <FormField label="Author" htmlFor="modal-author">
+          <FormField label="Artista" htmlFor="modal-author">
             <Input
               id="modal-author"
               type="text"
               value={author}
               onChange={(e) => setAuthor(e.target.value)}
-              placeholder="Artist name"
+              placeholder="Nombre del artista"
             />
           </FormField>
 
           {/* Date */}
-          <FormField label="Creation Date" htmlFor="modal-date">
+          <FormField label="Fecha de creación" htmlFor="modal-date">
             <Input
               id="modal-date"
               type="date"
@@ -353,7 +353,7 @@ export default function MarkerFormModal({
           </FormField>
 
           {/* Image Upload */}
-          <FormField label="Image" htmlFor="modal-image">
+          <FormField label="Imagen" htmlFor="modal-image">
             <input
               id="modal-image"
               type="file"
@@ -398,7 +398,7 @@ export default function MarkerFormModal({
               fullWidth
               disabled={loading}
             >
-              Cancel
+              Cancelar
             </Button>
             <Button
               type="submit"
@@ -407,7 +407,7 @@ export default function MarkerFormModal({
               loading={loading}
               disabled={loading}
             >
-              {isEdit ? 'Update Marker' : 'Create Marker'}
+              {isEdit ? 'Actualizar marcador' : 'Crear marcador'}
             </Button>
           </div>
         </form>

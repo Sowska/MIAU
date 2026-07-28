@@ -1,0 +1,14 @@
+{
+  "totalRecords": 114,
+  "titlesPreserved": 114,
+  "categoriesNormalized": {
+    "mural": 108,
+    "graffiti": 0,
+    "sculpture": 6
+  },
+  "recordsMissingCoordinates": 0,
+  "recordsWithoutImages": 4,
+  "duplicatesDetected": 0,
+  "warnings": [],
+  "timestamp": "2026-07-28T03:41:06.852Z"
+}

@@ -130,28 +130,28 @@ export default function HomeView() {
   const tourSteps = [
     {
       target: '[data-tour="map-area"]',
-      content: 'Welcome to MIAU! This is your interactive urban art map. You can explore murals, graffiti, and sculptures around the city.',
+      content: '¡Bienvenido a MIAU! Este es tu mapa interactivo de arte urbano. Podés explorar murales, graffitis y esculturas por la ciudad.',
       placement: 'center',
       disableBeacon: true,
     },
     {
       target: '[data-tour="search-bar"]',
-      content: 'Use the search bar to find artworks by title, artist name, or category.',
+      content: 'Usá la barra de búsqueda para encontrar obras por título, nombre del artista o categoría.',
       placement: 'bottom',
     },
     {
       target: '[data-tour="filter-panel"]',
-      content: 'Filter markers by category (mural, graffiti, sculpture), artist, or date range.',
+      content: 'Filtrá los marcadores por categoría (mural, graffiti, escultura), artista o rango de fechas.',
       placement: 'right',
     },
     {
       target: '[data-tour="legend"]',
-      content: 'The legend shows the color coding for each art category and how many are currently visible.',
+      content: 'La leyenda muestra el código de color para cada categoría de arte y cuántos son visibles actualmente.',
       placement: 'top',
     },
     {
       target: '[data-tour="create-marker"]',
-      content: 'Tap here or click anywhere on the map to add a new artwork marker. You can upload a photo and add details!',
+      content: 'Tocá aquí o hacé clic en cualquier lugar del mapa para agregar un nuevo marcador. ¡Podés subir una foto y agregar detalles!',
       placement: 'left',
     },
   ];
@@ -172,7 +172,7 @@ export default function HomeView() {
       const res = await getMarkers();
       setMarkers(res.data);
     } catch (err) {
-      setMarkerError(err.message || 'Failed to load markers');
+      setMarkerError(err.message || 'Error al cargar los marcadores');
     } finally {
       setLoadingMarkers(false);
     }
@@ -220,7 +220,7 @@ export default function HomeView() {
       .map((m) => ({
         id: m._id,
         label: m.title,
-        subtitle: m.author ? `By ${m.author}` : m.category,
+        subtitle: m.author ? `Por ${m.author}` : m.category,
         type: 'marker',
         marker: m,
       }));
@@ -305,10 +305,10 @@ export default function HomeView() {
     try {
       if (editingMarker) {
         await updateMarker(editingMarker._id, formData);
-        addToast('success', 'Marker updated successfully');
+        addToast('success', 'Marcador actualizado correctamente');
       } else {
         await createMarker(formData);
-        addToast('success', 'Marker created successfully');
+        addToast('success', 'Marcador creado correctamente');
       }
       await fetchMarkers();
       setFormModalOpen(false);
@@ -317,7 +317,7 @@ export default function HomeView() {
       setTempPin(null);
     } catch (err) {
       const message =
-        err.response?.data?.error || 'Something went wrong. Please try again.';
+        err.response?.data?.error || 'Algo salió mal. Intentá de nuevo.';
       setFormError(message);
       throw err; // Let modal handle the error display
     }
@@ -331,17 +331,17 @@ export default function HomeView() {
 
   async function handleDeleteMarker(marker) {
     const confirmed = window.confirm(
-      `Are you sure you want to delete "${marker.title}"?`
+      `¿Estás seguro de que querés eliminar "${marker.title}"?`
     );
     if (!confirmed) return;
     try {
       await deleteMarker(marker._id);
-      addToast('success', 'Marker deleted');
+      addToast('success', 'Marcador eliminado');
       await fetchMarkers();
       setDrawerOpen(false);
       setSelectedMarker(null);
     } catch (err) {
-      const msg = err.response?.data?.error || 'Failed to delete marker';
+      const msg = err.response?.data?.error || 'Error al eliminar el marcador';
       addToast('error', msg);
       setMarkerError(msg);
     }
@@ -457,7 +457,7 @@ export default function HomeView() {
           onSelect={handleSearchSelect}
           onClear={handleSearchClear}
           suggestions={searchSuggestions}
-          placeholder="Search artworks, artists..."
+          placeholder="Buscar obras, artistas..."
         />
       </div>
 
@@ -479,16 +479,16 @@ export default function HomeView() {
         />
       </div>
 
-      {/* Legend — bottom left */}
-      <div data-tour="legend" className="absolute bottom-6 left-4 z-[400]">
-        <Legend items={legendItems} title="Categories" />
+      {/* Legend — bottom left (desktop only, hidden on mobile to avoid overlap) */}
+      <div data-tour="legend" className="hidden sm:block absolute bottom-6 left-4 z-[400]">
+        <Legend items={legendItems} title="Categorías" />
       </div>
 
       {/* Floating Action Button — bottom right (create marker) */}
       {token && user && (
         <div data-tour="create-marker" className="absolute bottom-6 right-4 z-[400]">
           <FloatingActionButton
-            label="Add new marker"
+            label="Agregar nuevo marcador"
             variant="primary"
             size="lg"
             onClick={() => {
@@ -521,9 +521,9 @@ export default function HomeView() {
       )}
 
       {/* Mobile: Filter FAB — opens bottom sheet */}
-      <div className="sm:hidden absolute bottom-6 left-4 z-[400]">
+      <div className="sm:hidden absolute bottom-24 left-4 z-[400]">
         <FloatingActionButton
-          label="Open filters"
+          label="Abrir filtros"
           variant="muted"
           size="md"
           onClick={() => setMobileFilterOpen(true)}
@@ -593,7 +593,7 @@ export default function HomeView() {
             className="ml-3 font-medium underline"
             aria-label="Dismiss error"
           >
-            Dismiss
+            Descartar
           </button>
         </div>
       )}
@@ -659,20 +659,20 @@ export default function HomeView() {
             },
           }}
           locale={{
-            back: 'Back',
-            close: 'Close',
-            last: 'Done',
-            next: 'Next',
-            skip: 'Skip tour',
+            back: 'Atrás',
+            close: 'Cerrar',
+            last: 'Listo',
+            next: 'Siguiente',
+            skip: 'Saltar tour',
           }}
         />
       )}
 
       {/* Help / Tour button — only for authenticated users */}
       {token && user && (
-        <div className="absolute top-4 right-4 z-[400]">
+        <div className="absolute bottom-[180px] right-4 sm:bottom-auto sm:top-4 sm:right-4 z-[400]">
           <FloatingActionButton
-            label="Start guided tour"
+            label="Iniciar tour guiado"
             variant="muted"
             size="sm"
             onClick={() => setRunTour(true)}

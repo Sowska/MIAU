@@ -74,7 +74,7 @@ export default function ToastContainer() {
         sm:top-auto sm:bottom-6 sm:right-6 sm:left-auto sm:translate-x-0
         flex flex-col gap-2 w-[calc(100%-2rem)] sm:w-auto sm:max-w-sm"
       aria-live="polite"
-      aria-label="Notifications"
+      aria-label="Notificaciones"
     >
       {toasts.map((toast) => (
         <ToastCard key={toast.id} toast={toast} />
@@ -141,7 +141,7 @@ function ToastCard({ toast }) {
         <button
           type="button"
           onClick={handleDismiss}
-          aria-label="Dismiss notification"
+          aria-label="Descartar notificación"
           className="shrink-0 p-1 rounded-sm opacity-60 hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

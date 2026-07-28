@@ -158,12 +158,12 @@ export default function MarkerDetailDrawer({
         {/* Header */}
         <div className="sticky top-0 z-10 flex items-center justify-between px-5 py-3 border-b border-border bg-card">
           <h2 className="text-base font-semibold text-foreground truncate pr-2">
-            {loading ? 'Loading...' : marker?.title || 'Marker Details'}
+            {loading ? 'Cargando...' : marker?.title || 'Detalles del marcador'}
           </h2>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close details"
+            aria-label="Cerrar detalles"
             className="p-2 -mr-2 rounded-md text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <svg
@@ -218,13 +218,13 @@ export default function MarkerDetailDrawer({
               <dl className="space-y-2 text-sm">
                 {marker.author && (
                   <div className="flex gap-2">
-                    <dt className="font-medium text-muted-foreground shrink-0">Author</dt>
+                    <dt className="font-medium text-muted-foreground shrink-0">Artista</dt>
                     <dd className="text-foreground">{marker.author}</dd>
                   </div>
                 )}
                 {marker.date && (
                   <div className="flex gap-2">
-                    <dt className="font-medium text-muted-foreground shrink-0">Date</dt>
+                    <dt className="font-medium text-muted-foreground shrink-0">Fecha</dt>
                     <dd className="text-foreground">
                       {new Date(marker.date).toLocaleDateString()}
                     </dd>
@@ -232,7 +232,7 @@ export default function MarkerDetailDrawer({
                 )}
                 {marker.location?.coordinates && (
                   <div className="flex gap-2">
-                    <dt className="font-medium text-muted-foreground shrink-0">Location</dt>
+                    <dt className="font-medium text-muted-foreground shrink-0">Ubicación</dt>
                     <dd className="text-foreground tabular-nums">
                       {marker.location.coordinates[1]?.toFixed(5)},{' '}
                       {marker.location.coordinates[0]?.toFixed(5)}
@@ -245,7 +245,7 @@ export default function MarkerDetailDrawer({
               {marker.description && (
                 <div className="pt-2">
                   <h3 className="text-xs font-medium uppercase tracking-wider text-muted-foreground mb-1">
-                    Description
+                    Descripción
                   </h3>
                   <p className="text-sm text-foreground whitespace-pre-line leading-relaxed">
                     {marker.description}
@@ -264,7 +264,7 @@ export default function MarkerDetailDrawer({
                     fullWidth
                     onClick={() => onEdit(marker)}
                   >
-                    Edit
+                    Editar
                   </Button>
                 )}
                 {onDelete && (
@@ -274,7 +274,7 @@ export default function MarkerDetailDrawer({
                     fullWidth
                     onClick={() => onDelete(marker)}
                   >
-                    Delete
+                    Eliminar
                   </Button>
                 )}
               </div>
@@ -291,17 +291,17 @@ export default function MarkerDetailDrawer({
             {(marker.createdAt || marker.updatedAt) && (
               <div className="px-5 py-3 space-y-0.5 text-xs text-muted-foreground">
                 {marker.createdAt && (
-                  <p>Created {new Date(marker.createdAt).toLocaleString()}</p>
+                  <p>Creado {new Date(marker.createdAt).toLocaleString()}</p>
                 )}
                 {marker.updatedAt && marker.updatedAt !== marker.createdAt && (
-                  <p>Updated {new Date(marker.updatedAt).toLocaleString()}</p>
+                  <p>Actualizado {new Date(marker.updatedAt).toLocaleString()}</p>
                 )}
               </div>
             )}
           </div>
         ) : (
           <div className="p-5 text-center text-sm text-muted-foreground">
-            <p>No marker selected</p>
+            <p>Ningún marcador seleccionado</p>
           </div>
         )}
       </aside>

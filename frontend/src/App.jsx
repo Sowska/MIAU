@@ -65,7 +65,7 @@ export default function App() {
 
   function handleLogout() {
     logout();
-    useToastStore.getState().addToast('success', 'Logged out successfully');
+    useToastStore.getState().addToast('success', 'Sesión cerrada correctamente');
     navigate('/');
   }
 

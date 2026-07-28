@@ -54,7 +54,7 @@ import { useState } from 'react';
  */
 export default function Legend({
   items = [],
-  title = 'Legend',
+  title = 'Leyenda',
   collapsible = true,
   collapsed: controlledCollapsed,
   onToggle,
@@ -102,7 +102,7 @@ export default function Legend({
             type="button"
             onClick={handleToggle}
             aria-expanded={!isCollapsed}
-            aria-label={isCollapsed ? `Expand ${title}` : `Collapse ${title}`}
+            aria-label={isCollapsed ? `Expandir ${title}` : `Colapsar ${title}`}
             className="p-1 rounded-sm text-muted-foreground hover:text-foreground hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           >
             <svg

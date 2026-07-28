@@ -24,19 +24,19 @@ export default function ContributionForm({ markerId }) {
     setError('');
 
     if (!note.trim()) {
-      setError('Note is required');
+      setError('La nota es obligatoria');
       return;
     }
 
     setLoading(true);
     try {
       await postContribution(markerId, { note: note.trim() });
-      addToast('success', 'Contribution submitted');
+      addToast('success', 'Contribución enviada');
       setNote('');
       setExpanded(false);
     } catch (err) {
       const message =
-        err.response?.data?.error || 'Something went wrong. Please try again.';
+        err.response?.data?.error || 'Algo salió mal. Intentá de nuevo.';
       setError(message);
       addToast('error', message);
     } finally {
@@ -47,14 +47,14 @@ export default function ContributionForm({ markerId }) {
   return (
     <div className="w-full space-y-3">
       <div className="flex items-center justify-between">
-        <h3 className="text-sm font-semibold text-foreground">Suggest a Contribution</h3>
+        <h3 className="text-sm font-semibold text-foreground">Sugerir una contribución</h3>
         <button
           type="button"
           onClick={() => setExpanded((p) => !p)}
           className="text-xs text-primary hover:text-primary/80 font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm px-2 py-1"
           aria-expanded={expanded}
         >
-          {expanded ? 'Cancel' : 'Add Note'}
+          {expanded ? 'Cancelar' : 'Agregar nota'}
         </button>
       </div>
 
@@ -76,7 +76,7 @@ export default function ContributionForm({ markerId }) {
               value={note}
               onChange={(e) => setNote(e.target.value)}
               rows={3}
-              placeholder="Share information, corrections, or suggestions..."
+              placeholder="Compartí información, correcciones o sugerencias..."
               aria-invalid={!!error}
               aria-describedby={error ? 'contribution-note-error' : undefined}
               className={[
@@ -102,7 +102,7 @@ export default function ContributionForm({ markerId }) {
             loading={loading}
             disabled={loading}
           >
-            Submit Contribution
+            Enviar contribución
           </Button>
         </form>
       </div>

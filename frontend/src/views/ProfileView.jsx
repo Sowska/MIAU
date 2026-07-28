@@ -57,7 +57,7 @@ export default function ProfileView({ onNavigateHome, onLogout }) {
               </svg>
             </div>
             <p className="text-muted-foreground">
-              Sign in to access your profile and manage your markers.
+              Iniciá sesión para acceder a tu perfil y gestionar tus marcadores.
             </p>
             <div className="flex flex-col gap-2 pt-2">
               <Button
@@ -65,7 +65,7 @@ export default function ProfileView({ onNavigateHome, onLogout }) {
                 fullWidth
                 onClick={() => { window.location.hash = '/auth'; }}
               >
-                Log in / Register
+                Iniciar sesión / Registrarse
               </Button>
               {onNavigateHome && (
                 <Button
@@ -74,7 +74,7 @@ export default function ProfileView({ onNavigateHome, onLogout }) {
                   onClick={onNavigateHome}
                   className="text-muted-foreground"
                 >
-                  ← Back to map
+                  ← Volver al mapa
                 </Button>
               )}
             </div>
@@ -100,7 +100,7 @@ export default function ProfileView({ onNavigateHome, onLogout }) {
             </span>
           </div>
           <CardTitle as="h2">
-            {user.username || 'User'}
+            {user.username || 'Usuario'}
           </CardTitle>
           <CardDescription>
             {user.email}
@@ -111,28 +111,28 @@ export default function ProfileView({ onNavigateHome, onLogout }) {
           <dl className="space-y-3 text-sm">
             {user.username && (
               <div className="flex justify-between items-center py-2 border-b border-border">
-                <dt className="text-muted-foreground">Username</dt>
+                <dt className="text-muted-foreground">Nombre de usuario</dt>
                 <dd className="font-medium text-foreground">{user.username}</dd>
               </div>
             )}
             <div className="flex justify-between items-center py-2 border-b border-border">
-              <dt className="text-muted-foreground">Email</dt>
+              <dt className="text-muted-foreground">Correo electrónico</dt>
               <dd className="font-medium text-foreground truncate max-w-[180px]">
                 {user.email}
               </dd>
             </div>
             {user.createdAt && (
               <div className="flex justify-between items-center py-2 border-b border-border">
-                <dt className="text-muted-foreground">Member since</dt>
+                <dt className="text-muted-foreground">Miembro desde</dt>
                 <dd className="font-medium text-foreground">
                   {new Date(user.createdAt).toLocaleDateString()}
                 </dd>
               </div>
             )}
             <div className="flex justify-between items-center py-2">
-              <dt className="text-muted-foreground">Role</dt>
+              <dt className="text-muted-foreground">Rol</dt>
               <dd className="font-medium text-foreground capitalize">
-                {user.role || 'Contributor'}
+                {user.role || 'Contribuidor'}
               </dd>
             </div>
           </dl>
@@ -144,7 +144,7 @@ export default function ProfileView({ onNavigateHome, onLogout }) {
             fullWidth
             onClick={handleLogout}
           >
-            Log out
+            Cerrar sesión
           </Button>
           {onNavigateHome && (
             <Button
@@ -153,7 +153,7 @@ export default function ProfileView({ onNavigateHome, onLogout }) {
               onClick={onNavigateHome}
               className="text-muted-foreground"
             >
-              ← Back to map
+              ← Volver al mapa
             </Button>
           )}
         </CardFooter>

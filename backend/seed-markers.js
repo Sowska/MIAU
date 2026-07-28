@@ -3,89 +3,1073 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Marker = require('./src/models/Marker');
+const User = require('./src/models/User');
+const bcrypt = require('bcryptjs');
 
 const markers = [
   {
     title: "Av Lafinur (Club Victoria)",
     category: "mural",
-    description: "VERÓNICA CORRALES: \"Veroline\" es como firma esta artista plástica tucumana. Desde sus pinceles fluyen temáticas de cuidado del medio ambiente y la igualdad de oportunidades independientemente del sexo, credo o religión. @vero_corrales",
+    description: "VERÓNICA CORRALES “Veroline” es como firma esta artista plastica tucumana. Desde sus pinceles fluyen temáticas de cuidado del medio ambiente y la igualdad de oportunidades independientemente del sexo, credo o religión. @vero_corrales",
     author: "Verónica Corrales",
-    imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR65m-7g9m9BrUN4fO62c2Ww1Y2AvH9hhSFVVBS4X9MRUIFUyCeDKQ3Tksc6l-lE-DmktcbJNynpNzgCX-MNJQBy7ygQKc5DFvTkKPx8gzX7Y56vbY-oorPqWKudoM-S8FcJn4F6AA28XY02_qiK_RQXEPChdf9B_46DcYP6gYyt1xDLG9e-maUM8vV2x8SHmj4fJxagznbE8Fc?authuser=0&fife=s16383",
-    location: {
-      type: "Point",
-      coordinates: [-66.34563, -33.30747]
-    },
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR65m-7g9m9BrUN4fO62c2Ww1Y2AvH9hhSFVVBS4X9MRUIFUyCeDKQ3Tksc6l-lE-DmktcbJNynpNzgCX-MNJQBy7ygQKc5DFvTkKPx8gzX7Y56vbY-oorPqWKudoM-S8FcJn4F6AA28XY02_qiK_RQXEPChdf9B_46DcYP6gYyt1xDLG9e-maUM8vV2x8SHmj4fJxagznbE8Fc?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.34563, -33.30747] },
     owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
   },
   {
     title: "Av Lafinur (Zona radio Nacional)",
     category: "mural",
-    description: "SOLEDAD PEREIRA: Cuidar la biodiversidad que nos rodea no solo atañe al respeto hacia la fauna y flora sino un cambio de hábitos y pensamientos. El ave naranjero está representado en el boceto. Es una artista misionera. @solepereirasol",
-    author: "Soledad Pereira",
-    imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4--icLsJTrIvS-vnVrYVLfYRaLZiJMLhZp5sY06zpJm5bC3NeZ9uvlEGvGOkMl1TZ5eV8gYbrTXN7ICdrOJL15-ogkYYY-S0iSo921cVQ76BDGD3PvJvNxeOlNReesZaGjA0SZznebRsqelu3gp2DNHleliJB_1TVOYQ2CW7tsDEv-VIIrHrMweSuxgMd5f42E1CDuXj38wn8?authuser=0&fife=s16383",
-    location: {
-      type: "Point",
-      coordinates: [-66.345234, -33.307462]
-    },
+    description: "Cuidar la biodiversidad que nos rodea no solo atañe al respeto hacia la fauna y flora sino un cambio de hábitos y pensamientos, que con el tiempo vamos adquiriendo cuando se trata de cuidar la vida silvestre de nuestro planeta. Revalorizar y dar a conocer a la fauna y flora, es un pequeño aporte para generar conciencia. Las aves particularmente presentan un papel muy importante en cuanto al control de plagas, y regeneración de ecosistemas. El ave naranjero, el cual esta representado en el boceto",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4--icLsJTrIvS-vnVrYVLfYRaLZiJMLhZp5sY06zpJm5bC3NeZ9uvlEGvGOkMl1TZ5eV8gYbrTXN7ICdrOJL15-ogkYYY-S0iSo921cVQ76BDGD3PvJvNxeOlNReesZaGjA0SZznebRsqelu3gp2DNHleliJB_1TVOYQ2CW7tsDEv-VIIrHrMweSuxgMd5f42E1CDuXj38wn8?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.345234, -33.307462] },
     owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
   },
   {
     title: "Chacabuco y Buenos Aires",
     category: "mural",
-    description: "TATY GÓMEZ CONTRERAS: Estuve pintando por San Luis sobre diversidad y género y me gustó pensar el cuerpo como un territorio femenino lleno de herbáceas, un lugar de cuidado recíproco.",
+    description: "Estuve pintando por sanluis sobre diversidad y género y me gusto pensar el cuerpo como un territorio femenino lleno de herbáceas un lugar de cuidado recíproco para quien lo sepa habitar. TATY GÓMEZ CONTRERAS Esta artista colombiana es de las que busca ser protagonista de cambios significativos, tanto sea contra las petroleras como lo hizo en el “Atlanticazo” de Mar del Plata junto a colegas, en la recuperación de valores, al representar familias en dijes y mini obras para portar o en defensa de",
     author: "Taty Gómez Contreras",
-    imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5ZgpYOlnSWGHjm7FjbzrcX9YHIOwAra-S47wUX2sW9hcBglBXXNrg7L9jryt81x3F2UFE5FMZt51ISYYgeCCopnQzlF4HqzqktvbvNEwI5C1ErgPbjwNxjHTz1LM5Gfai-xmJzIjTgrIaWoXH5kqt3P3sLkgI3TQPK7QHWjwosHXQWQhIwPQnL0cT0ijOdvGoYR2ACJ7AWqK4?authuser=0&fife=s16383",
-    location: {
-      type: "Point",
-      coordinates: [-66.336926, -33.311122]
-    },
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5ZgpYOlnSWGHjm7FjbzrcX9YHIOwAra-S47wUX2sW9hcBglBXXNrg7L9jryt81x3F2UFE5FMZt51ISYYgeCCopnQzlF4HqzqktvbvNEwI5C1ErgPbjwNxjHTz1LM5Gfai-xmJzIjTgrIaWoXH5kqt3P3sLkgI3TQPK7QHWjwosHXQWQhIwPQnL0cT0ijOdvGoYR2ACJ7AWqK4?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.336926, -33.311122] },
     owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
   },
   {
-    title: "Chacabuco y Buenos Aires - Juana Koslay",
+    title: "Chacabuco y Buenos Aires",
     category: "mural",
-    description: "COLECTIVO TACUARA ARTE (SOFÍA MORELLINI Y JORGE MAXIMILIANO ARCHIRIA): En nuestro mural queremos representar la figura de Juana Koslay, mujer indígena que es parte de la identidad histórica y cultural de San Luis. @tacuara.arte",
-    author: "Colectivo Tacuara Arte",
-    imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR47EAukn2B8h7orWgsSxweQ9TN7uVdd9zxCQ5Uy8GlIxpiXXso210M59BOojn210Ghw0wTysxf1FxP1YqIGuh5lQ7IK-74mco64lvlpKGdfGpVqXDV0fEek_SHRhrrlMgTS2lyUcxb6o8W7RNm9ZA0sGyH8Gim02vp3PVGB8QmaMHbkuXQfwbMxdT6nOeK2oUWQwLGUhHGPhlE?authuser=0&fife=s16383",
-    location: {
-      type: "Point",
-      coordinates: [-66.336813, -33.310656]
-    },
+    description: "“JUANA KOSLAY, FLOR DE AMÉRICA” “Juana Koslay, Juana Koslay, Oh, Madre! Virgen dulce de Cuyo, Flor de América, reverente me inclino y te saludo porque tú fuiste La semilla nuestra y nos diste color americano centurias antes que la patria fuera.” Antonio Esteban Agüero - Un hombre dice su pequeño país El redescubrir nuestra historia silenciada nos permite conocer y reflexionar sobre nuestra identidad histórica. Fortalecer nuestra identidad cultural a partir de investigaciones históricas son funda",
+    author: "Juana Koslay",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR47EAukn2B8h7orWgsSxweQ9TN7uVdd9zxCQ5Uy8GlIxpiXXso210M59BOojn210Ghw0wTysxf1FxP1YqIGuh5lQ7IK-74mco64lvlpKGdfGpVqXDV0fEek_SHRhrrlMgTS2lyUcxb6o8W7RNm9ZA0sGyH8Gim02vp3PVGB8QmaMHbkuXQfwbMxdT6nOeK2oUWQwLGUhHGPhlE?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.336813, -33.310656] },
     owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
   },
   {
-    title: "Av. J. D. Perón (antes Belgrano)",
+    title: "Av. J. D. Peron (antes belgrano)",
     category: "mural",
-    description: "LIDIA ROSANA GÓMEZ: Es la mejor imagen para disfrutar la ternura, pero también su dulce manera de evidenciar la desaparición de un ser tan importante para el equilibrio natural como son las abejas. trabaho@lidiarosanagomez",
+    description: "Es la mejor imagen para disfrutar la ternura, pero también su dulce manera de evidenciar la desaparición de un ser tan importante para el equilibrio natural como son las abejas. LIDIA ROSANA GÓMEZ La artista es originaria de Río Negro, pero su entusiasmo la ha llevado por diferentes países como Francia, España, Honduras, Brasil, Bolivia, Perú, Chile Uruguay, México, Colombia entre otros y sus recorridos por diferentes encuentros de artistas dentro de la argentina la ha nutrido de experiencias, e",
     author: "Lidia Rosana Gómez",
-    imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5IyK6OIJYTQo_suuyNxMwHT2NvD1W1FuOgBkuP-a6vIkb2jjZYfQ8OTKdppxVXz58QkB5dJLk1RqQSEhXgelg6StYNCLufbvgpyU2ih3lGQujtYrPYNJQQED9uENLAQyssgB0XV5H_pllHig4--SkOw5ES9yzFDFo_hiEXcOr_cNa83QeeQCm7l2ahKJEt0s6k6cHxVhICknw?authuser=0&fife=s16383",
-    location: {
-      type: "Point",
-      coordinates: [-66.3270698, -33.3021771]
-    },
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5IyK6OIJYTQo_suuyNxMwHT2NvD1W1FuOgBkuP-a6vIkb2jjZYfQ8OTKdppxVXz58QkB5dJLk1RqQSEhXgelg6StYNCLufbvgpyU2ih3lGQujtYrPYNJQQED9uENLAQyssgB0XV5H_pllHig4--SkOw5ES9yzFDFo_hiEXcOr_cNa83QeeQCm7l2ahKJEt0s6k6cHxVhICknw?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3270698, -33.3021771] },
     owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
   },
   {
-    title: "Pje. Sta. Isabel y Av. Juan Gilberto Funes",
+    title: "Pje. Sta. Isabel y Av Juan Gilberto Funez",
     category: "mural",
-    description: "PAULA GISELA GATICA Y VIVIANA PARENTE: En este proyecto quisieron plasmar la imagen de una mujer lumínica. Mujer soñadora, segura e imponente pero sensible. Ambas comenzaron siendo trabajadoras del Plan de Inclusión.",
-    author: "Paula Gisela Gatica y Viviana Parente",
-    imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6Qi-5e7igiziE5A5VHTo1jnTwWsw2q-P_EwR2W2E8MpCDGme0RfoAMq4OyOyx0e8rp2JI_HJq7kwIJLvRF_lyVtMlpDfv2jk0pCxUwK3l8mlg_tO_lIlgi1CwYsgzp3GU0CWsVVpZI_hsv8VRQjyBzBh4ijEpqmFVt6Xrt7gQmG-L2M-2ibYdH90BH86UgN7dt5E2bXvak7QQ?authuser=0&fife=s16383",
-    location: {
-      type: "Point",
-      coordinates: [-66.3253265, -33.3080651]
-    },
+    description: "En este proyecto quisieron plasmar la imagen de una mujer lumínica. Mujer soñadora, segura e imponente pero sensible, aquella que para disfrutar cada día debe evaporar las sombras del pasado y de todo lo que le ha herido o dejado huella. Tiene la capacidad de proteger a su entorno. Consciente de que cada cambio de nuestra vida nos da energía y vitalidad para enfrentarlo todo. PAULA GISELA GATICA Y VIVIANA PARENTE Estas artistas autodidactas han logrado con cada mural demostrar sus capacidades. A",
+    author: "Paula Gisela Gatica",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6Qi-5e7igiziE5A5VHTo1jnTwWsw2q-P_EwR2W2E8MpCDGme0RfoAMq4OyOyx0e8rp2JI_HJq7kwIJLvRF_lyVtMlpDfv2jk0pCxUwK3l8mlg_tO_lIlgi1CwYsgzp3GU0CWsVVpZI_hsv8VRQjyBzBh4ijEpqmFVt6Xrt7gQmG-L2M-2ibYdH90BH86UgN7dt5E2bXvak7QQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3253265, -33.3080651] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Chacabuco (antes de 9 de julio)",
+    category: "mural",
+    description: "Los patrones circulares de los mandalas hacen referencia a los procesos, a los ciclos de la naturaleza y de la vida en general. Lo circular para mí tiene algo intangible y particular que lo hace atractivo, y muchas veces la gente elige tener estos diseños cerca para, de alguna manera, reforzar su búsqueda de tranquilidad y de paz. Me alegra mucho poder salvar la distancia del espacio tiempo y que compartamos el arte de dibujar. DANIEL EPHRAIM Artista plástico y músico, firma como KOKON, sigla de",
+    author: "Daniel Ephraim",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5RFX2Zy0liUmg3OIfL_OJbhLcz1BR5uFbC2u4xuIvZoovdCRXi3b8KpD5KNpxjvyi_3kVEMTLMXLowQTFpISR_noRAVPZCEnyEb-NWf8IrnQSBnKglcZExX4JHLleVr14kxf32c-mytGHslkIiMZlmSY2AwzCd8fHnEE__CpyjpRFgy-8-o93YEJ39SlE-i410oLvJohVyYzo?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3378125, -33.3066875] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Entrada Ejercito (Estadio Futbol)",
+    category: "mural",
+    description: "El Ejército Argentino reconoce y valora a todos aquellos que, cumpliendo con el deber que la Patria les demandó, durante la Gesta por la Recuperación de las Islas del Atlántico Sur, supieron acudir al llamado de la Patria como soldados, con valor y heroísmo sobre la turba malvinera. Durante aquel tiempo de la guerra muchos quedaron allí, como eternos centinelas de la Patria, y los que sobrevivieron son “nuestros” veteranos de guerra, ejemplo de sacrificio y entrega en defensa de nuestra soberaní",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7WZcrG6yLBffjYcr9dIn4e0UJ1sODnC2lU7dVHFDP8wWBweYH_QVeG7nYbNkV90k-ZfLWNFDhEnlB9qnCac10ibC4n7Hbpv89TSksYhsg1VcEBEUjIAI5qmsn2VY0k_2bv0bJKoQ_d_NqVo31hnR6GITS3J-9dhx2-LXH-QaEJ-ptCaT_bPLIiTbAskqxYB_pJEwinIgHkjPM?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3290861, -33.2907146] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Chacabuco (Antes de Av. España)",
+    category: "mural",
+    description: "Este mural representa claramente la energía femenina que radica en el amor hacia todas las formas de vidas como fuerza creadora de luz. Y la necesidad de valoración que nace desde uno mismo. MARIA PAULA GERONIMO Esta artista plástica y diseñadora gráfica puntana ha incursionado en el gran formato desde su multi cromática paleta. Sus líneas seguras cargadas de buenas energías son las elegidas casi siempre en sus recreaciones. https://www.facebook.com/mariapaula.geronimo",
+    author: "Maria Paula Geronimo",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5YpK0yH0OHBmMMIIqj0kURMocCWSNHQroniMNrO2YOeIJdKVFkBgVIEQy6uGgM3bIl1dd0ODYzCIbgks97mvOv6cDYiGtnRvQhax_3q4XAQ9-3xaOmVuEzmBMmUly2pndpXZ2RTDEbZBVqscsaqtKLnAptp_0LyRzrs8cPtSDwCeCOfAoUIFnuNX73pBBw4oa2D6hZNx252GI?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3419405, -33.2931658] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Lavalle e Hipolito Irigoyen",
+    category: "mural",
+    description: "Galceran Maria Mercedes",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7SXxNVw5VE_mHgKndUcKONTokSwJd7w9Uyt0-9VhcVUH6t9yYBjDlFewvVQRrDPn1ItsXQ96FZhrIyZzbRkid9-syvJJeHfM9cDoLzRgPmHmlZl_vxC4EOtykFgFttvguyoumya98G2MIFjS4snh9sCU0vN70jE4WxnOHi6ZjBxyvhXvKCeAKXm1tpT8tczDw6Wz4oTStNXNg?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3312829, -33.2985383] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av. Eva Peron y Justo Daract",
+    category: "mural",
+    description: "Una manera de llamar la atención a los críticos e historiadores que no incluyeron a la Mujer en sus registros como artistas de tanta valía como sus colegas hombres. Destacamos especialmente el papel de Frida Kahlo, su continua dedicación hacia la pintura hasta reconocerse como surrealista, su obsesión por expresarse de manera netamente americana y más específicamente Mexicana, abusando quizás del uso de color y sus exuberantes flores. La frase “PINTO FLORES PARA QUE NO MUERAN” es de su autoría y",
+    author: "Pinto Flores Para Que No Mueran",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4VFM3fnPmVBJr9Tguqf-f2ABBmmaDXIQVjEcb1qsHFkspxTKSBRpGZObrSzqmoaHfbTFwxOz-x1a1_Ia-9tLeE33aemfL6M5_jqm3LeZZ_s-S43e9QLDIK2WD7_Ve6hSKKJwjUUr7J4X7yDyTIKMUpDYmcS-VxGMJCrdPq5NyqszLmXacfgjt0MDw5mTxPI4IX_QP68FkfAAk?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3371695, -33.2858706] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av. España (Ex terminal)",
+    category: "mural",
+    description: "Esta obra representa simple y llanamente el amor, representado en un beso que se produce en medio del baile, en cualquier momento y situación. ISAAC EXEQUIEL ABDALA Este artista que vienen desde los valles del Tucumán demuestra su trazo certero no solamente en los murales que se pueden apreciar en diferentes provincias de la Argentina, sinó en muchas de las pieles del Tucumán ya que es uno de los más prestigiosos tatuadores de su provincia. https://www.facebook.com/isaac.abdala.520 https://www.f",
+    author: "Isaac Exequiel Abdala",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6Su2mkGkpW8tbpL6n9k8_URiEyoWAacYSlTz96fslp8MoVK95LEebgujWM_OP5cdMl2zU6r1OjQgJqdd2ML1dEZregbs7xHYB_mZfZn4x9kPq6-5Zk92vTrTR79lg_Pi3jxqMUrdNZlzud6gRO-zMcc09fbMMqZzMuo6gxV9FvC60GGVYPHu9xjvHxIxaFYgN2R-XlPvObrAk?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3393125, -33.2931875] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av. Julio A. Roca",
+    category: "mural",
+    description: "Representa un pacto entre el humano y el mundo animal en busqueda del mutuo respeto. Un abrazo simbólico cada vez más necesario. A la vez es una llamada de atención representada de una manera colorista y alegre. SANTIAGO DONDO Y VIRGINIA TORRANO Santiago es también artista visual asociado al craneoclub, es escultor, músico y sus inquietudes artisticas son imparables. @san.dondo Virginia Torrano es una ilustradora, dibujante y muralista. Forma parte de @craneoclub.sl. Es nativa de Rosario, pero h",
+    author: "Santiago Dondo",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7TZVgICveQuU_12bykdL-VMYgfYMIV_DC_kK0QzctUiCWl5yhTjVPdf4xDa8wsvErvVZYwfFU9vqJhfCG6cUg2OD-K7yJQ75gnF8fb3yuwQtBiLuZysPaLfQscwgI0IYl_uAEaOXLOi0FPj7WwzH-kq61D6x7jEc4D7ioDsu4ICFosbjKd4-3SbmO8LDJp9bhyo31bLUBuHx8?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3363157, -33.3120298] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av Lafinur (Zona Club Victoria 2)",
+    category: "mural",
+    description: "NATALIA PRETTO Natalia Pretto “Prett”. Es de Misiones. Artista Muralista, ilustradora y docente. Murales por encargo, proyectos de arte urbano, talleres, ilustraciones digitales y diseño. Licenciada en Pintura y Profesora Superior de Artes Plásticas, graduada en la Facultad de Artes de la Universidad Nacional de Córdoba. https://www.instagram.com/prett_artista",
+    author: "Natalia Pretto",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7sluEuAxrMyu0GoRwg06K4pDVjutiFUBWDzxJNeuWyupyctdey52NjyMWcOyI44h_pUXRO2kuyMUoEOB92UjKUZzIk_U8rV0tK5t4o2CSs0eGW1CVQyKBe9kYbbGrCI9r8xmFQ6cocrIYzySBlCIRapzzpE-JOONLhDgYD_5W9flXQ4m6F0CgeQhknR0_lvfH8QIM4ALIJC9M?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.345673, -33.3073] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av Lafinur (Municipalidad)",
+    category: "mural",
+    description: "“SIEMPRE MUJER” Sus obras en general se ajustan a las necesidades del programa, aunque tiene predilección por las que representan las figuras humanas, en su mayoría femeninas, en las cuales refleja ciertas poses sensuales que más que reales, pasan a ser simbólicas, en sus mujeres se evidencia la seguridad en si misma. En esta obra Bety representa una bella mujer respaldada por los colores que se esbozan a modo de vitraux, por lo que se deduce que esta imagen quizás es autorreferencial. BETIANA S",
+    author: "Siempre Mujer",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR58xUMx8jLiB0l4mwBjcfkyFYnhOmxaWZDaHGfZplIvhmjoY1110VRc-ek-KtJ9WLaHVIv_O1COwRhh3RMOk89sVH-AsYI-u4rwL3fOF1Y2l9TZpDo4vmOGTEBUsd6Xmwht0qz5ndVj9wDnB8ZhweQuWhcoV470pGGbHX4YrvVJglMYumEW46Hs7hl6_gNe0hdCmm1lymMPGkI?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3479108, -33.2964185] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Chacabuco Antes de Tomas Jofre",
+    category: "mural",
+    description: "En este mural se fomenta la adopción conciente de una perro con sus historias de vida, con aventuras y conociendo sus posibilidades en Libertad. Un perro callejero termina siendo el mejor compañero de vida que se pueda soñar. CRISTIAN LARA Artista plástico nacido en San Luis. Completó sus estudios en el colegio de arte \"Nicolás A. de San Luis\"; dándole paso y herramientas para comenzar la carrera de Artes Visuales en la provincia de Mendoza. Sus obras, cargan un trazo agresivo dado por pincelada",
+    author: "Cristian Lara",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4phpzwNdh6TcMF_xfK5sB2Ya8-a7Og36UJzJ_Yid_TtgvTFs5858zRXlskNlDusRa6KNdUoG9dJidSI0a90caIcaNj0RbBRDbiBnUEf9R7UqlYbmfEXILGS88Id7HbiU58_jpayYgGgSLrrf5CpJklde9beIpP5_gjmMVm4IthfYdhv_4t1Tq9Rbr5oxYl2SIEac1w9lIQ0To?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.341373, -33.295006] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Riobamba y Av. Eva Perón",
+    category: "mural",
+    description: "WALTER LUIS RAMIREZ BRITEZ Artista urbano nacido en Corrientes, ha sido seleccionado en Bienales de Arte cuando fuera estudiante y su sueño es ser ilustrador. El boceto refleja la temática concientización y cuidado ambiental, específicamente la situación que muchos lugares de nuestro país estuvieron atravesando: los incendios forestales. Es una problemática que a los correntinos nos tocó vivir muy de cerca, ya que en la provincia se registró el foco más grande de incendios de los últimos años, c",
+    author: "Walter Luis Ramirez Britez",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7guqHAIxe5pu6sYnX2mNzcq-TTa2X9lPVQCE6J17ngf3qa75ZXB1SrRUJDAC3gcbb30iB2YhFvNG0RqT66Ysn3H81kL_NnqXylkjdzqEB_4wYP9-6AvZUABk3xiP2z-MaJhHfTLrYBQOG2s83lzb2qVq-8nS5d8K4nu-2pIusIw3mey9Nrt7rf7zIczfqHV6w89ZwP--kpbbU?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.314953, -33.292662] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av Justo Daract (Colegio)",
+    category: "mural",
+    description: "MARTIN NICOLAS POBLETTE LEDESMA ARIADNA GREULACH Estos puntanos son dos de los motores del Cráneo Club. A MARTÍN el placer a crear los ha llevado por la experimentación de diversos materiales y diseños. https://www.facebook.com/martindnicolas Ariadna es profesora de dibujo y una eterna buscadora del realismo y sus expresiones, deleitándose en los claro oscuros. Su exigencia la lleva a cruzar sus propios límites por lo que incursiona cada vez mas seguido en los murales. https://www.instagram.com/",
+    author: "Martin Nicolas Poblette Ledesma Ariadna Greulach",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4atma59-qE1H9kwAcL8H9fGJ7aHuM5DMho3-nWRZsjr08shGLtym3wWWZdyDyYcbeQOAQESs0fN0G89H5JdzMgqG2i4ikp19nI_ncVMh-6WYE0ebiHsiXkRGGFbzzVuP-sIgj491goIsme2FavhKqJrhcizxI3MOTte6f8mx4o-A8E0igsIwH5t3vqkP6u8v53TE2ZsfWjnho?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3387486, -33.2727266] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Vialidad Provincial (Calle Ituzaingó)",
+    category: "mural",
+    description: "Primer mural de la serie “identidad” A la hora de hacer un mural el mate es casi tan importante como los pinceles, pero queríamos saber qué significa para otros, por esto hicimos una encuesta en ig y nos sorprendió, que por mucho la palabra que más veces apareció fue “compañía” lo que nos pareció muy preciso para definir todo lo que representa. Es interesante como le podemos incorporar un sentimiento a un objeto, lo que nos hace pensar que el mate es mucho más que una infusión, es un nexo que no",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6OfiBB7etww-Gpdo3AO_0rBrv62Fc-B43-hwfx4v3rhFjTa-tW0YkkBI7B-KTEAm3zycYSYWmPq8zgdbXgeQ5dNXMdkPhXUYXlTFZXglPxAviX_LZPlTez6lRYqmDMAxQ5j70YwqjRxTl-P2Gz_bTSakJCJ5x4waXwKagrZm89b0REl6wX_IpKBbmn9RsGEM8mmX1a0P698rA?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3303276, -33.2934035] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Sucre y Av. España",
+    category: "mural",
+    description: "Inspirado por resaltar la belleza del error y buscar romper con los cánones estéticos, la fragilidad de lo finito de las cosas y el constante cambio e intervención de la vida, donde nada está quieto y tampoco nada es absoluto. ALAN MYERS Artista urbano nacido en Buenos Aires. “donde más aprendí fue al pintar en la calle junto amigxs, allí el contexto está vivo y te pone en jaque constantemente, ya sea por el soporte (nunca una pared va a ser igual a la anterior) o por la gente que pasa por el lu",
+    author: "Alan Myers",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7wHLXVZ6-ddu9wDZCzRDu4c-TU6fihZvnqkpdeXTiOjxTItH-6Z-FUKrsHQ9yXkoKhmLcEz8P3qqqIqSaBtfjgDMLKH4hgaS9eOxAGCA_6QeIfRj88sfFMoun3AqicLwUwbFyfuIPf-OeAotWFjRPGH1npVS14cGs-MrPZddzgb41NY-QVErc53FzryR8hNeHJKCqWNQB2UxU?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.329109, -33.291938] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Ex terminal (Calle Francia)",
+    category: "mural",
+    description: "Globalmente, la lactancia materna es de suma importancia, ya que favorece de forma óptima la salud y el bienestar de las madres y les bebés y es la forma más sostenible desde el punto de vista ecológico. A pesar de la existencia de las leyes que la protejan, los niveles de desaprobación social siguen siendo altísimos y generan mucha ansiedad en personas lactantes. La suma de todos estos factores hace que el acto de dar la teta en público sea una práctica sumamente feminista (y muchas veces se us",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6nNVZuVNs7u5Sgm3AvvheVr3f9vzZ5OJ-bs9gENmTFVRGg56hCDNyBGYFwlvGpxvYowQ0diVjOjePpRw_t-pHgCGebkdXxWwcZhzxma15wrzEub6QE4kgZQhaZSNiwdYmrlbqi6DaPXzLEYUsQHCe-V728KFWviEpFobwQf4B-Z-Le2jibMrOklN6NIWwsV2m92OHxJIGf3KA?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3400699, -33.293057] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Martin de Loyola y Estancia Grande",
+    category: "mural",
+    description: "“LA CURANDERA” Este diseño pretende realzar la idea de sanación natural consiente e inconsciente por el cual todos hemos estado o estamos pasando. En este caso, la mujer protagonista de la escena tiene su vista al frente, decidida y empoderada a afrontar lo que sea. Acompañada de su guardián protector, el halconcito gris, ave nativa de la zona. Violeta, la mujer retratada es descendiente directa de Aymaras del Norte de Chile, es una activista comprometida con de los derechos “marrones” y origina",
+    author: "La Curandera",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7_LiSmzjfMrtvH0Zpa2yJEtKliGc_stL5ekWU0KLIFnQHPcKNtSXNDjCkSnDWxtTiZrtf117e4RLaia-tGFhaWioaYqZavvja4mRnef1lDla6k1R64Kl-kmbnsUUTTrFHg_ZFNxvwBh0BK8v-HQlpXT7hzmUj3OmMhKJEOgs39JVbUpoN6DL8K1nhuLPVuSpiJbVhwlZ3CelE?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.317359, -33.283187] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "San Martin (Aiello)",
+    category: "mural",
+    description: "Este mural recrea las maravillas turísticas de la Provincia de San Luis, formando su nominación. Al estar en pleno centro y frente a la municipalidad homónima, se ha constituido en una de las fotos de referencia. . “Hago letras al estilo ‘wild style americano’ que tiene un efecto más visual, mencionó el artista. JULIAN GEILER Julián Geiler se define a sí mismo como un grafitero y firma sus obras bajo el pseudónimo “Shule”. Sus trazos decoran muros de distintos puntos de la ciudadTambién hago con",
+    author: "Julian Geiler",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5-9kGiJS-UCqCMaYU1EvWJ72Wh7Pn9XV42Pwrl5jRfuEGP7vqv1l59CjdL5e31LWcRNy_1v0Wu4AffExKECNzYVWA2d3EUhG5i6LanfBmB1y0LrHjX_ikWGQaHL-YupFCK2RwGO8ZoSMnDPCseOCaX7W_fn1c2Plju2oMp-WKGEHyP3yfp2N8MUmGx1K_LnDyfQhOrcGkkr_A?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.336922, -33.304538] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Correo Argentino",
+    category: "mural",
+    description: "MARÍA PILAR TOLOSA Y JULIÁN FACUNDO RAZQUIN CÍCLOPE es un proyecto que articula diferentes lenguajes, de las artes visuales, del diseño, de la arquitectura y la comunicación. @ciclope_arg",
+    author: "María Pilar Tolosa",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5H1Su9jA3HFOKe2mAuJj6gK43sWiSgU3F_IF31LqS0Opk33Fl0Dt2lGqYd7zJkaRzRHKrbw5OrfcM5aCnFmNkdrapNQP2vWX9q4tQaNK6xtXUce0xzJqVSHK7BcBBbbDm8NpzdL_3lJ2FiR-V81XlBb4h5qOWezY593JHN2g3M8Y6FRkPwr4MW06JAF8FrtrDrpYtcNuYvK78?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.338484, -33.301363] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "De battini y Av Justo Darct",
+    category: "mural",
+    description: "El mural se llama la YUNGUITA seria LA YUNGA HECHA PERSONAJE, , su urraca es un pájaro típico de la zona y todo Sudamérica, es conocido por su inteligencia y capacidad de aprender, simboliza esa capacidad natural de adaptarse, la niña representa el espíritu creador femenino inocente fuerte pero frágil de la naturaleza, lleva un poncho norteño,. Y un halo de santa rita. que es una planta medicinal, y q trae salud a los hogares donde esta… IGNACIO STESINA (Cuore) Es tucumano, DJ, productor y edito",
+    author: "La Yunga Hecha Personaje",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6QN4wdxsRpyPnhz2dZWxjvY5-WhIY2JQyYb_IDOePA0YeZPIg1QVBq8wyBlrS6jc26bX71LQ-MBMlIVH9x9Z71DsfVqZ0zfRZ0qABptxvQZDD5rZhx8GZX-29flY3lPvBjLI5QJozJZ8Gv4HTuDTN9JMHw90sZOE8X_h11R35hL8UrBFIG3tn2JUKB4O-ljPndGCxcM9axHz4?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3392031, -33.2706625] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Pedernera y Falucho (V. Nacional)",
+    category: "mural",
+    description: "SANTIAGO MANSILLA “CONCIENCIA AMBIENTAL” Santiago Mansilla (conocido popularmente como “Santi El Negro”), oriundo de Libertad, localidad de Merlo; y quien se desempeña como muralista. Sus comienzos, las obras y el mural de Lionel Messi y Diego Armando Maradona, fueron algunos temas que se trataron. https://www.instagram.com/santi_el_negro/",
+    author: "Santiago Mansilla",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6R996FGCuyHxy6UBu1rZguV44aJOTeqwCL_gyMt7o8l9W4kpzxeiIWU7x9-lGvWoDD5E84PC3r9ZLZJDRDf7Gs_5dphtvqnVzPqy8pYDn-sKxyNHh47Jl1_aebbwZ-WKidZ-AVpjgnbsJ6t3PtkixYQVt19goDSQ4Yc8ABRmh5kT7FXhYcuYMVvaVoras5xPDASPSK1rTQtR8?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3455645, -33.3011777] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Puente Ascasubi",
+    category: "mural",
+    description: "“HACELA CORTA” Simple directo y sin filtro Corta de raíz tu maleza. Espesura de plantas que daña las tierras de cultivo. Machete=campesino=originario=resistencia. El tema recurrente y en mensajes ocultos se puede evidenciar la comprensión de la difícil historia de Colombia. La guerra, que comenzó en 1964 (y aún no está del todo resuelta) es uno de los muchos temas que aborda. Materias adicionales como el desplazamiento de grupos indígenas, la corrupción y los campesinos creados a partir del conf",
+    author: "Hacela Corta",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7N1ppSOTKRMkSEj9PPJbgMZ2gX9QxtDy6vFCIouHkAOhzLbNu0GjCwKtdCJtfm4RdJ0XvHbIdWGG5jlqeRrU96nOzN2a9mla7gH1WKAGO5xdTg_zHy7EETqMB83kGDk0oD6QYB01fu7wr890cpAti9_Uo9CAx8HQ1yemA872ty3wJGnWPetmKt30Vhw-gIT4FOAbM6ACf6ctE?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.32253, -33.306936] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Puente (Riobamba y Av Santos Ortiz)",
+    category: "mural",
+    description: "Concentró toda su energía en los ojos de un niño, buscando el asombro del instante, la atracción, los colores, la altura, las dificultades, los pinceles que fluyen, los sonidos de la calle y ese segundo que te detenés. Una mirada que emana un mundo y que invita a juntar miles de miradas transeúntes. DAMIÁN GALASSI Mis obras pueden verse en muchas localidades de la Provincia de Córdoba (de donde soy). También en Provincia de San Luis, Misiones y Buenos Aires. Amo la combinación de planes de viaje",
+    author: "Damián Galassi",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR455ug34lC8KqNCkJZ_2h9RsfS5bChZ7J-s7cw3oh2AjDrxgYnEIVn1djP9C4XkBQHS6RE1ACPLzVCk4Wr5FRVcAkiAN5QI5v8NIi86IimRpdrn4Ljyz2W6E-qpcYZHPxCf6eEqcPb-OsbWnIHDhJc16HmQW7iZlza-6q8ksWey9SQUiS3ceFwYLtlZABcP58DRzNUm7ECEkw?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.313766, -33.301238] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Mural Edificio Progreso",
+    category: "mural",
+    description: "“A 40 AÑOS DE LA GUERRA DE MALVINAS” Desde 1833, el colonialismo inglés desembarcaba en las Islas Malvinas para su ocupación, en una clara maniobra que atenta y continúa atentando a la soberanía argentina a 186 años de esta acción criminal. A pesar de los reclamos diplomáticos, la dolorosa guerra, las reiteradas protestas ante los organismos internacionales que siguen sin respuestas, la lucha continúa por la justa defensa de nuestro territorio y de nuestra soberanía en las Islas Malvinas. “El ar",
+    author: "Años De La Guerra De Malvinas",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR77tWtB2ygEbuF8SvJlZT6OocBHnGlPQvqclfVV5mfkpbPW3eeGvpWbSkk0i0DFxjzDN2nBcu3H4jOpJbBkqzWP9cUuO6mt0z5Pow41bbypOduuhQ0nE2FijvgirprEziF-Urp4XBrFqjOexdlvR54ckI-RvlUiaQYfAOWGuAZw5uJlpDgCCPjwQtJ0GOPReedmQfOpPZ29Ug?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2963635, -33.3025019] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av. Serranias Puntanas",
+    category: "mural",
+    description: "“Mi intención con la máscara es abrazar nuestro lado oscuro, ese lado que nos provoca miedo, angustia, perversión. Ver ese lado como algo necesario para experimentar, conocer y poner en diálogo con nuestro “yo conocido”. Conectando lo consciente con lo inconsciente en lo que el surrealismo llama \"superrealidad\" “Nuestra misión es ayudar a romper la división cultural y geográfica dentro del mundo del arte. Proporcionando un megáfono adicional a esta poderosa voz en los EE. UU.”",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6jCduF-K_xznUCMAiMcOWTjZcpOZQTf_MgGjGQOE2sYXNEV-Q-nB_A8uiyHDW5iZoKazhje0Kcl45E5xB2qdPHWoskVpCGn6_pDrIWKoDKIOLwSH8bkcuzAvhaS3wekVS2LRG0iLcR8s6kfXwyFR_sbA5Kwd188cKFcJAw9ss-TEoclb9mpRIL62zfsrribStfRNICzWpsmCE?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2666406, -33.3035375] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Gral. Paz y Bolivar",
+    category: "mural",
+    description: "Un patriótico homenaje a los héroes de Malvinas, a recuperar el orgullo de nuestra patria, a la lucha con los fondos buitres y muy en el fondo se perciben las formas tradicionalistas que impusiera el artista plástico Florencio Molina Campos (un hombre multifacético que ha plasmado escenas costumbristas en una línea de caricatura con mucho detalle, en lo que tiene que ver con la vida de campo, con la vida rural. La vida y obra del artista se viralizó a través de los almanaques y que supo cautivar",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5G4wdJa88AcZN1kZVZ1VjhfoQNR9QFPM3RxMY7HGd697NtA42keme6-p-bsYF0gfK0RbACNuOwnTeZAseIlmahnD9OqZ6dALAFio9ElMyOmUuog_438PDCgI6NkeyDhGJVB9o6k4eQ2cPQ5gR5_LWk1JBceBsgNSTEoeqoKArQUWttCZBPLvLcDgD54P1PbtUZ9h2g4JcOwOY?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.334401, -33.297134] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Hipolito Irigoyen antes de Bolivar",
+    category: "mural",
+    description: "El mismo representa \"EL ABRAZO\" de Fanny (@unmichibebe) y Luna una perra callejera... que gracias a la protectora de animales @salvandohuellasobera encontró un nuevo hogar y mucho amor. Un llamado de atención que habla de la necesaria responsabilidad al elegir un compañero de mascota. PREUKSCHAT SABRINA La artista Sabrina Preukschat es de Misiones y su afan de crear la lleva a experimentar con múltiples expresiones. Realiza fotografías actuadas e intervenidas; obras de caballetes (como la colecc",
+    author: "El Abrazo",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5s421UfXAxBY9zrFgSiifRB9krwNazEnnpWz6Yp6vCBLjNs5R36goVkkUCZEyYYhvdDP1V2AXUZFE4Ok2XDw47ugXo0uwDHYKk0tcku-YkOPatdcCNDO5r434B1qBp2i3S1U3qAx8FqYBZCYUm7NajGI5HIEfrrBc8Fv4q2lbPuDdd2lSjnr9oHDynJqpCsEGPy_osBlrAghg?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.326491, -33.2990224] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Terminal EDIRO",
+    category: "mural",
+    description: "MARÍA BELÉN VICENTEF Mabel Vicentef es una artista nómada que viaja por el mundo pintando y trabajando en murales de gran dimensión. Su obra se puede encontrar en paredes públicas de Uruguay, México, EE. UU., España, Albania, Croacia, Bosnia, Marruecos, Nueva Zelanda, así como en varios lugares diferentes de su tierra natal. Buenos Aires. Vicentef es conocida por sus pinturas a gran escala de rostros femeninos bellamente expresivos que se mezclan con la naturaleza. Ambos elementos, humano y medi",
+    author: "María Belén Vicentef",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7zUgEMKO31Men7m_P856u0LNxxwxqtR7N5cdIrFLamgNVEqdVYFx_CFdYCT88JxO98tf1QLmuP1bgwsXsxOkuMgXUFO3pOObiWGh9Fyd5mnaxTkMfUrbgMZZhLNkk8ltVzFYl2TylTsNqs7FrRR6Rrc8-VjyK2N6khAnCptBv9VtvsLE_VN_nEv6c6NzmqRekAgs1i5kP2xOI?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.297509, -33.295507] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Riobamba y Av. Eva Perón",
+    category: "mural",
+    description: "INGRID KARINA PETTERSON Es una artista multifacética de Corrientes. Ilustradora y Artista urbana, música, arte y diseñadora digital. El diseño juega con el concepto histórico de especie en extinción, con las políticas extractivitas y el mega consumo sin previsiones ambientales por parte de nuestra especie, que en afán de su supervivencia y aspiraciones, sobrepasa cualquier hábitat sin importar la flora y fauna que va quedando en el camino, y el impacto que tiene sobre nuestra propia subsistencia",
+    author: "Ingrid Karina Petterson",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7MMw5SoqECya2LmmPS6hn3OsbNBu0kMG6LKrFaYS_p1sYIU3eQ54BEvvePc80DVRnux5NkoXxL6IN7zYOL50uKagvoiF6CUbamfvMlu_lUc-VPL9haCV4bHWyl7m846UWTqrF-LABWZzzIfj90RVCBU41BULt5pXA_W5iivIXxWzFpSGtQXBwgXiEwDGWZT4BrTu4YITqVaLc?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3128031, -33.2930687] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Belgrano y San Martín",
+    category: "mural",
+    description: "“En Belgrano y Rivadavia, donde actualmente hay un supermercado, existió el Teatro Club Social y eso es lo que pintaré. Al mural lo voy a hacer solo y medirá 7 x 3 m”, contó el artista. El estilo arquitectónico del Teatro Club Social original era neoclásico de influencia italiana. Bajo la dirección del Ingeniero don Rafael León y los empresarios constructores Antonio Quadri y Betolli. En la planta alta del edificio, funcionaba el Teatro San Luis, réplica del Teatro Alvear de Buenos Aires. Allí s",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR54Rc7IHdK7DeOh2tWE1k9ObTCKrd9LQxQnGK99r5MABIFNGHq0ePLpKmbmz9hntcFaP-ffjXuL84vZEdmjLLpPjaBH9R3hFSnSbCHvB9oOV_XICgzipH3aT9WBg05cxd9xjQiGTBqDUtiSpAZx3suqnsb1qZptUkUQQE8-rMUX7QvbbmXT9G1TKboJSlUWsSH8HVpizfSVNgw?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3370921, -33.3044417] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Belgrano y San Martín",
+    category: "mural",
+    description: "DANIA PERALTA Dania Es diseñadora gráfica, artista plástica e ilustradora. Sus obras son reconocibles por la fulgurosa coloración que le imprime, una tendencia a las expresiones mexicanas o centro americanas la hace única en la Ciudad de San Luis. Peralta es la encargada del taller de pintura \"Los colores nuestra libertad\", con sus alumnos a finales de cada año realiza una mega muestra. Con éste proyecto busco transmitir a través de la MUJER esa fuerza inspiradora desde el poder conectar con una",
+    author: "Dania Peralta",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4WN2RwIe13vKeF3CN7QD-y9ngS67u9GjtZqWHZ7MpX2gDvVF8J9WwIGVeh1PRMTcjFOC0pL8TfNu566aHcJBDoDRz0mb2RgUfN-pFogznh5mYhebOyniztR8Vz7exZkQATErdmpC_epQzhUnq0KqqIqaBUoa1-76dxMisMsRz-JNeeZUhnSmCRwFNRGVHlcctJ4ds6s8leOhc?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3374691, -33.3045368] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Bienvenidos a San Luis",
+    category: "mural",
+    description: "A las tipografìa que representa la llegada a la Ciudad de San Luis, instaladas por el Ente Control de Rutas se le dio una energía renovada a fuerza de Colores que contrastaran con el verde de nuestras sierras. Este hecho ha incrementado la voluntad de los turistas en sacar la foto que evidencia su visita LUCIANO CAMERTONNI de Pinta San Luis Artista visual y diseñador industrial. Este creador especializado en diseño realiza cada propuesta como única. En su camino creo recursos para fortalecer la",
+    author: "Luciano Camertonni",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR66QYyrJUwos2sYhjryei54Wod62O7jkDxmoKWdbeOEvqesE0RmNs9fhQF3lwsSKLk9o7OMs_v3FL0iCU8tj1Sm7-3UZwhbO_KL-g2W_UQE4ntRFXm1VK2Y9fyUIMS1FWzAIYb9EKdBUu2ubxEKe_WyQQgV9j2JkkwOqdaArWD66qqqUaEGcyGYIxhqFRpU05ifmNrB0QNpPQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.258208, -33.3041518] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "El Venado",
+    category: "sculpture",
+    description: "Esta obra fue una de las seleccionadas en el Concurso Internacional de “Mega esculturas para ingreso de los pueblos de la provincia de San Luis”, organizado por el Ministerio de Hacienda y Obras Públicas en 2010, el año que en se homenajeaba el Bicentenario de la Patria en todo el territorio provincial. Esta escultura esta planteada en chapa batida, soldada y encastrada a modo de troquel lo que hace una fisonomía a la vez impactante pero sencilla. ANDREA GUTVAY Escultora, arquitecta y representa",
+    author: "Andrea Gutvay",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7jqiI3XORBg4Z1WJuRPJF7Wz1wRUSphOnsfIj9wIBPsf_w_QjwpVOLxCcLgbhG-xePlrU8ys9rhHxNTH0hiOGc2Ndeg8OVhM4vIHZf8oxoJP7zj20dkBbaQeEz25JYZ5nwc3jX5MtdqIb0nX2BbRfTzVy4vqkIG1SiRbJT1xvawVIvq__cS90an_ipYuAk1NCrbZ-gOHJKeA?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2587229, -33.3040442] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Pje. Sta. Isabel y Av Juan Gilberto Funez",
+    category: "mural",
+    description: "Una pequeña perla, brillante y delicada de color azul celeste cubierta por blancos velos que gira lentamente en un profundo mar negro misterio. La Tierra nuestro hogar. Nuestro hogar, el planeta Tierra, habitante de todo ser vivos forma parte de un universo intenso. En el nuestro planeta está lleno de vida, con una rica variedad de plantas, vegetación, bosques, selvas, animales de todos especies y pueblos. Nosotros los humanos dependemos de la tierra, del agua, mar océano y del aire y tenemos el",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4OtmFnqjGBwWpe25L225Ru3U4ZPlaahJmCatJt2xYddRYQHcX_XrQNIlENGFYMAiUpP2ynbWNDZljZ6E4P4NwvVpELTwJj7iEY7-CZ7pxhk7nuD7HZqWAPw55yg4Efw-JzvhjHTFML-GlrMWv8LwsB7JNm02KKoqkTy78FfJkFOdMuBFO_FKp-ytliM6F_VX8ZkNG5RUzNzdE?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3253051, -33.3081432] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Hospital Central \"Ramón Carrillo\"",
+    category: "mural",
+    description: "Abril 2019. La inauguración del Hospital Central “Ramón Carrillo” fue un día histórico para nuestra provincia. el gobernador, Alberto Rodríguez Saá, presionó el botón y una tela blanca de más de 16 metros comenzó a bajar, ninguno de los presentes imaginaba lo que había detrás: el rostro, en dimensiones gigantes, del primer ministro de Salud de la Nación, Ramón Carrillo. Esta imagen dejó a todos impresionados y recorrió los medios provinciales y nacionales. VICTOR CANAVIRI junto a Aarón Dorado y",
+    author: "Victor Canaviri",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7MbYYsfwSzIOtzdbAI08nr76SR1kls-Q9bQLxRCYUQBqTzIrBh0cVYCQGIomkk0Q-kqZKsgL3Xrv7ldVKZREjNdLmUfZK0esigJEfNsqhkFAOW7lXylP4-arm2Xd2Mr8x3t0OkFGveWS3tbAeMSegX-ytBfCheyGTcHNOr5A7WftRzczP3cDgViQqYu7ACtQ5ptRtWdLKAtQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2810206, -33.3082358] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Puente de Ingreso al Hospital",
+    category: "mural",
+    description: "LUCIANO CAMMERTONI Este artista y diseñador industrial representó el despertar en la figura de una mujer en pleno bostezo. La mariposa representa la realidad que en sus aleteos va abriendo la mente a un nuevo día con todo lo que eso implica.",
+    author: "Luciano Cammertoni",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4ASHX1upVCv-fgS_yHolm7P6FvMaDQzErC-KK2CUasEwW3jRRRrWP1lj1PhiMeKtMUhW5RZyQ9W5ikyABZvvnQUghCM4H4cWwRQut4tUwQee6XH0An_L058hfMKzoOwzY9YMpKN_eoxRBeYjdqDrx7BHPLH_9s1eOnqaX975Gh8M9FMLUjZcKk0f-MbHW1YwLL2O5ki435oQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2817073, -33.3047209] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Pedernera y Falucho",
+    category: "mural",
+    description: "CARLOS FRANCO CERVATO Las pinturas de Franco Cervato se presentan ante nosotros como la vida misma, llenas de misterios e interrogantes que no son solo del autor, son los mismos que se repiten en la humanidad desde tiempos inmemorables. https://www.cervatovato.com/",
+    author: "Carlos Franco Cervato",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4IMFcFv12e_o5DFn2VIYn5IDSABElJBu70Hcf9DApCTzMeOyksdBNk1g_HeLYvKXhoq1C_b7n5ZPbkObKdcf3jplsoXuKCE4trq7KA6JUVeXpUf078oXAo00JVkmwrtNuLFAPG008firIpxAki1fwAdazUL5ssrlq7YiVojfO3JKi_LBM9bmIVRvEkDOiyIccz0qMfFxg80Y4?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3455153, -33.301181] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Falucho y Pedernera",
+    category: "mural",
+    description: "SIMÓN JATIP Simón Jatip contó que “llegué en el 2008 a La Plata, a la Facultad de Bellas Artes, y empecé a conocer artistas que en ese momento ya pintaban y empecé a mamar todo con apenas 18 años, luego los conocí y entré en su circuito. Ya en el 2015 me largué a trabajar solo y a pintar murales, pero siempre me llamó la atención hacer esto en la calle para hacer una obra pública, para todos”. @simonjatip",
+    author: "Simón Jatip",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6qwX72fsnoYlpGS677LEVt3O80w6Af4cfyl-C-VI1w9CQPj8YzowXJFjqDvgj7EaePEkw754tj2f26BolhDJfnRCkPnNBwh0CNAn_rT2LM289wvbhcPGx2b-lbR10w60E2J82ijsRy_zQRsAXZ9NX_IC6O5DE3-m6--44E8A-14T4Fz0rEVS1PtqpkZuaGynTaVvgBo9acFdQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.345589, -33.3010802] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Falucho y Pedernera",
+    category: "mural",
+    description: "AGUSTÍN SCALZO Creador y gestor cultural de la ciudad de Mar del Plata. Realiza murales, ilustraciones y animaciones donde plantea acciones y relación con el mundo que lo rodea. Creador del proyecto Atrapasueños Relato Urbano, artistas representan intereses comunes con el vecino en una acción colectiva. Sus murales pasean por mar del Plata y también por Bogotá, Cuba y más. @planetacees",
+    author: "Agustín Scalzo",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6J7zlJtH-wT_C6fhPnliZqRMkzgul8kH4-dK2SgM5tLVO-8AEjglkfW3st3dloeGg7CaxavRd-TBMPL3EYAr872N-uQHCbp30ZAt7qv30pVzlP8IwbduOb3Yn2HE2jSIE1WnH9Seeeiy4iO5Eq1Ug4-n0W5Bo5zeEQnm6dNEPnWE_R1KGGR6I5yVEsZ51ThqmMkTZTMTkFnw?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3455769, -33.3011251] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Puente de Ingreso al Hospital",
+    category: "mural",
+    description: "ISA LI Isabel Celi crea su obra con protagonistas femeninas. El cuerpo de la mujer es la marca, literal, de su producción estética. En los cuerpos de las mujeres marcados por mandatos sociales y religiosos indaga su obra. Sus desnudos incluyen, no sólo una poética, sino una política de género.",
+    author: "Isa Li",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5UU0ym38ECvzl3GiWaljT1TzBEZA55_RMQO1YZOyro1TxsfWSz8kXnIBXRhUVl_rkCRCiBf49Rr399oxpiOtGpfEDZ2qUyNAVjI-artzatwxvlt2Y_6LuR1k0zRiUPfOXrXzoNMpRljYTqDdToMarFHV5QsCra_kZ4vgBMby4ReOf8iS0exuSIFie7hYLSw8-jdtWbGo9UwQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2813816, -33.3046745] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Salon 1 de Mayo",
+    category: "mural",
+    description: "“ABRAZO PASIONAL” Es el soñado abrazo de dos equipos de fútbol líderes de la Argentina que mueven los amperímetros de la pasión nacional y que cuando juegan, cada partido se considera un clásico. Con la particularidad de haber elegido a los mejores modelos para la representación, como son sus propios hijos llevando al mural un recuerdo familiar y sensible con gran maestría demostrando sus dones de hiperrealista experto. CRISTIAN “KAVE” ACOSTA Cristian “Kave” Acosta es un artista original de More",
+    author: "Abrazo Pasional",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4mQI6HMECmtXsgPNFDkfsxJ7J9OSpnqQfcv6oq2rHJ3NGeETmRhcR9po9tc-94IlTrj_e_l2lrXSBHGzUY7QIjKE6DJMQUhOaKgntlMBVyQT-3xZmW1Bw1xgTBP7ukxpEAErYRf8PO1I-6KZln9d4VwMcyHMKRYM_0_1s-Z7lNvCz_qkK7eRk6FY1pWZF2QUJetZwdvHmm_YY?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3866323, -33.3094886] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Puente de Ingreso al Hospital",
+    category: "mural",
+    description: "BERNARDO SEBASTIÁN VACA Su representación demuestra el contraste entre serenidad y se contrapone con la manifestación energética que constituyen los cabellos de una mujer. Eligió una base llena de luz y dinámica para demostrar su energía intrínseca.",
+    author: "Bernardo Sebastián Vaca",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7pfwbcUT2bctkM1_SIok1bc4wdMNKLrQ3Fz0NZcZhVietlez4yYXVod_MHqtZAivv-Z1XR4yg6U8mJoIas-PbXssw_PtJMg5EZegqL9tBUJr81bDGoadi0bhb3IFSyGzIjFua6UDJBOpkiJYKre_o46SrDnk02KD73RX6RALuapeO_mAhaBib3is7bgbj4C2Ge6tuBNh9crQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2810931, -33.3050517] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av. Justo Daract y Gabriela Mistral",
+    category: "mural",
+    description: "ANGEL POLLINI Este artista y deportista mercedino destaca con sus obras por su linea particular y reconocible. Ha realizado puentes y muros por toda su ciudad. @angelpollini",
+    author: "Angel Pollini",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6ZWquaPbMbf_3p-Guv5vsMwjctAVRUjbC3B4zgp0XtxbvK10p2egw4F5eZK_pNQlFe7PAe1_4LuF1GdP-h99-abyiS527LwviZrUizfzveTfQOP5DvpX_DwO5xSRagusNrBDZrrCj2w9h_L0s9i7v7JEwWVmdn-ztLDxCkUdhFVaNbANp2qZ2hM2QeIz46MZPBxxs05jt1co0?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3386868, -33.2733226] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Calle Camino del Norte (Ruta 147)",
+    category: "mural",
+    description: "La mejor manera de representar el Abrazo es mixturando de manera mágica los diferentes estilos, que aunque se visualizan y reconocen las diferencias se aprecia como un todo. Un abrazo entre hermanos, un abrazo que busca que dos corazones estén lo más juntos posible. Un abrazo es dos seres que intentan fusionarse, un abrazo puede estar en un sobre o en un email, un abrazo puede ser una frazada o una caja con comida, un abrazo puede ser por teléfono o tener un montón de brazos, un abrazo puede ser",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4TR7M32mdV45xtoASCoxjzcM5flfOUCKPXhVCscSr-LAlPF48ojYikKoJJAbPd8HS1bv5GhvBVsVQnegUkHyFuhMvsIYIAhCbGGovvuNyQ4cAh85-DjeI3M6rdcTZcWP0RADCLcJQyEcIiSSazt6rPoE8vg3gB6ERV8llop2Z07DcZq_kktYTjT2tK24fKlmnc1o8jGGjLqmE?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3046719, -33.2804125] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Falucho & General Martin Güemes",
+    category: "mural",
+    description: "\"Te encuentro en un abrazo de respeto y equilibrio. Te abrazo, con toda la dulzura e inocencia de la niñez. Te ofrezco y recibo, caudales de bondades y sabiduría.\" Elegimos el abrazo de una niña, de los pueblos originarios, a un caballo, quien también representa la fuerza y la libertad. Ambos habitantes de este suelo. Por su conexión ancestral, de respeto y equilibrio con el medio ambiente. En el fondo aparece la silueta del acueducto Vulpiani, como ejemplo de progreso y relevancia histórica del",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4l0tWKch-CgLa1eC_AQfuMXCFhAaUB0-Dg58Ow5n_PBSZ5kLAlM3kOtNSvKIz34anIc8SJTumJ_DWjStXyMvNKYDxG0OUNZbGQQD3UvgWNe-3T7M8OAt5u-z9TzF04FSZDtkbJvlf69QAQBz1xSRoTC9Qr1YobvDoKXf-L28hlbULsyJQ9UIzFhIVVKX_ySSSd2tdamvtL1Co?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3473369, -33.2905808] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Puente de Ingreso al Hospital",
+    category: "mural",
+    description: "MARCELO PEREZ Y Alejandro Debia Marcelo es uno de los artistas contratados por el Pinta San Luis, por lo que su experiencia en pintar murales es intensa y continua, por lo que se ha enfrentado a las temáticas más diversas. Esta obra además es de su autoría.",
+    author: "Marcelo Perez",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5igBur8z4Jwbp0B0K3SBs2gqHVIgkgtibAttop1obqcSdulWk74aDM-6aTwVgZCUsw5UrEO2DXydUPzvhuqotC-D7zSd4OpCiU3kY6KjlLDub-L2_nZhXQp_6l-VLbrnjBqVWZ9G6UPm6ygg2uWM-TwY0gbbNmJIslXfZTysj9hzXvYjiacGiyOKSkUB5IZBpLzsvIgIkWXQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2812433, -33.3055538] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Vialidad Provincial (Calle Ituzaingó)",
+    category: "mural",
+    description: "“SOMOS UNO” Todo esta interrelacionado. Más allá de los límites de nuestro cuerpo, existe una conexión entre nosotros y lo que nos rodea. Bajo este paradigma las acciones que ejercemos a favor o en contra de nuestro entorno y los seres con los qué convivimos, repercuten en cada uno de nosotros. La relación humano-animal es más fácil de entender a través de nuestras mascotas. Están altamente documentados los beneficios que el hombre obtiene a través de esa relación. JAVIER ALMIRÓN Artista y gesto",
+    author: "Somos Uno",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6QFGOd_0i_nmMKwwatOYytIkQwMvg2NHbUgc9pg7oxYQy6WubL4bC1gRSslihBIvnZdMdrIIJ_EHaRTl4Jee24QcsKCtmBYdLPrO_AFEP2bKfJ6qylxE7XHbaPRmrFPBrXJ12IoUO_4qNhEM2yCRkhympZ9973uQoLDoM6t0tALaIt5mhgTQhqyqdAGX5iMyUttoBoPAYff7E?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3291577, -33.2931288] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Puente de ingreso al Hospital - Oeste",
+    category: "mural",
+    description: "JAVIKU Javier Mediavilla es artista residente en Villa Mercedes, multipremiado ya sea con arte pequeño formato, de caballete o murales. \"Bien te veo\" demuestra su estilo particular, reconocible a simple vista, siempre plagado de simbolismos, sus grandes ojos le otorgan una ternura implícita y es un claro exponente del expresionismo fantástico de San Luis",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7aMygMqh5nLVJIiNInzkmpdEdyQ7MgPdlGWVqt-3S-yVMe5uamDoG9jrGHu3APsvWBxaisRnS8NBpH3N-9wAWgwBwcSlhAKcLHdnOs8Sh4j1MJqkU2LS1AjIe9oa5FKY9nnG5VgqdTDfKbb8p5PhUa_7hdt2zekHMARGWiR-ucTrIU8UacaS3QScoP3gTf7eo7EDPohozI2A?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2825194, -33.3047615] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Puente Ingreso al Hospital",
+    category: "mural",
+    description: "FERNANDO GARIMALDI Según sus propias palabras este merlino \"Simboliza la importancia de los bosques en el ecosistema, comparándolo con el órgano del corazón que hace correr nuestra sangre por el torrente sanguíneo.“",
+    author: "Fernando Garimaldi",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4GzBAvge3h6NOe5V5u0bEmI5dj20Wiks26xhirotRenKCT-H5CMK3eqkw6aDXUoB4z8U2p569mczgtvPF2ZoNv9J4KalbaPbEYzefPxoY6TBCug9IiFgCVcgyIyGD-vi3SiV4G00Kd1lOoicvYD_7kdeC6uiYvwBcYwORnp7tORaFmdiz25J63vM_k8e7daUWtAbHRx6f7VA?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2827984, -33.3051022] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av. Eva Peron y Justo Daract",
+    category: "mural",
+    description: "San Luis ha sido un corredor humanitario recibiendo a los primeros refugiados sirios que tocaron tierra argentina. Johnny un estudiante de 17 años, proveniente de Aleppo, Siria, es uno de esos refugiados sirios en Corazón Victoria. En este momento, la provincia brinda asistencia a 38 refugiados sirios y pronto recibirá más familias. @corredorhumanitario.sanluis CLAUDIO GABRIEL PAMPILLON Este músico y artista plástico entrerriano de Gualeguaychú, es un verdadero apasionado por el arte efímero, en",
+    author: "Claudio Gabriel Pampillon",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR73LwapDUxOsFevmnpsORYiBSqro5_xOdfimmQOLTdSlhWyI3nB85a2WhHOXGqtMqrvhs7IQWudxE9criv4hoL5WFp_pkmE9kIcOgyaPXSKY7mThqlBIjqZisfPM78nCvKWfF5-LqOAXHuC8je7XmyoB1NorqtIMltq5E0qoR5E94vESyhhY1eHa8R4mRjQstkYI8Gpm21dcqQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3371168, -33.2859154] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Puente de Ingreso al Hospital",
+    category: "mural",
+    description: "ALBARO RODRIGO, JARA RAMOS Y JUAN IESARI El colectivo “Pangea” está conformado por dos gigantes del Arte Urbano, de orígenes español y chileno, comenzaron a pintar juntos por casualidad, pero el tiempo y el encuentro los ha ido fortaleciendo desde sus inicios. Estos murales en donde organismos humanos y naturaleza se entrañan y refuerzan, provocan una abismal realidad que se expone en la inquietud de expandirse.",
+    author: "Albaro Rodrigo",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6NnSBAjdiFD7-1oeeElvnqbXX5aRKDngor1YDKW1Yut3fAj16qNLIMk_xN44b3YCUy_G1UhjjmTCf5afUf45S_mhp2-65dH6qh2c-Rilp0lbaLJTbYMbUcF4BqvMVwHzD8Rs_3GqgrPhlHj0_PVoDXTE3poV5UEcI4XtC7trbYHH1XChyOV76Ycj3ZauUsH0SDrzxnwGjQKQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.282219, -33.3054609] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av Justo Daract (Colegio)",
+    category: "mural",
+    description: "Un \"Abrazo de Luz\" es una expresión que trasciende más lejos de un simple y casual saludo; cuando regalamos un Abrazo de Luz a otra persona, el efecto que produce es más profundo, que incluso, un abrazo físico no logra igualarlo ni superarlo. Un abrazo es una reciprocidad de Energía entre dos personas, intercambio que debe inclinarse de modo benéfico para ambas personas. Quiere decir, que no existe un real abrazo si sólo una persona brinda-regala Energía, y la otra, sólo la recibe. Cuando dos pe",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR62W-DUHMb2i3tkyPU3yTdz-MrbeFFWka2ZLQwxr1VLwbxDxTkOIEh4c_glsLw0BPgG0aoFhGF9ngh005zURYQpDJiTSZk6gQaBauoIYeWEDRSFrT7M6FwldksNCjXv52VTc8EY_56HqIbX9PL_743mSGJwkvT3uUN9k5aDYXqFXFiKLJ6tMk1s1KtU25UkW5yUifDRZIhBjv8?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.338709, -33.2731896] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av Justo Daract (Colegio)",
+    category: "sculpture",
+    description: "NAHUEL CABRERA VIDAL Pampeano, desde hace años nos muestra su talento en sus variadas composiciones artisticas. Un amplio despliegue estetico que va desde la pintura mural con sus Stencils, el tallado en goma espuma en sus titeres y las composiciones de sus obras en pequeño formato. Fue reconocido con premios y menciones. https://nahuelvidal.blogspot.com",
+    author: "Nahuel Cabrera Vidal",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR55A37Pk6Un4GHZopkwJekA90KlvIA_sVUuKcJrjBvzd8TjCzRQFfDredXVpLwTxXlRz8qWWI4RVh6hG_BV7FyCm-pcNo3wqTrTw0VJp4eHfBks__aivnnnCOkBVz3q2-jY_4H7HTKis3QJAd07Ghrjmu5egycx2O9ISfWsg8b1W84G1zPrEgGZY-AZEFNC95sOJhJNYTWmmH8?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3387196, -33.2730304] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Av Justo Daract (Colegio)",
+    category: "mural",
+    description: "GIULIANA NICOLLE HERRERA Es una artista plástica y realizadora multimedial residente en La Punta. Poisee una capacidad impresionante para plasmar la realidad como lo demuestran los retratos de niños del Mundo, en los que siempre destaca el brillo de sus ojos. @kida.arte",
+    author: "Giuliana Nicolle Herrera",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5_VtzekrgZzch8rCNnNkwddKdCHU0yP34OstwADwU6rFWFi1Rs75rLK5qQsx_ILFw3tNpivp62khGG3e8WwEggVe69ftFJsJ-4qtNbXNgqzslpTvU-ZwkRG0roVh4oUEPqV8gmZhGft2dro8hIAFwm5zyxnSZJjOd_yENVB5zKyxReiGfuCUyqSMfyMwuYIPeLbiezkVzI-20?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3387413, -33.2728454] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Hito del Bicenenario",
+    category: "sculpture",
+    description: "Plazoleta de Dinosaurios Estas esculturas formaron parte de la carroza del carnaval de 2014, que honraban la historia de de San Luis desde el período de los Dinosaurios de los que existen huellas en el Parque de las Quijadas. Diseño de GIORGIO CARIBE Tallado por un equipo local coordinado por ROBERTO TESSI y la Pintura y refacción la realizó MARCELO BONFANTI GIORGIO CARIBE es uno de los más destacados diseñadores de Carrozas en Río de Janeiro ROBERTO TESSI: es un destacado escultor, escenógrafo,",
+    author: "Giorgio Caribe",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7KSnfS_wUZnAPeNm0u8lb-oNuivib6X-2qqdYq_EfeoUp69weHXy5iXr03k1D7FzOrE1WnsfvQNLECTaFWjxuOhqeAWD-zLO064VS6dAzxF429ZfiihZf98Qpe-euW4N85Vlk8ehOnzeDv-iRt9gyjn7qpEhMTvJl6K1q1XWi-OhT-Szoc6UY-L51Leu6qEfyQ-vSoYbaVJGw?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2969695, -33.3063934] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "CIRCUITO DE ESCULTURAS “TERRAZAS DEL PORTEZUELO”",
+    category: "sculpture",
+    description: "“AROMO” MARIELA FERNANDA PANIAGUA Se formó en la Escuela Nacional de Bellas Artes Rogelio Yrurtia y en el Instituto de Cerámica de Avellaneda, fue seleccionada como pasante en el Programa de Restauración de Monumentos y Obras de arte de Bs As, asistió al taller de dibujo y escultura de Leo Vicci y Ángel Marzorati, destacados escultores Argentinos. Ellos la motivaron a transitar la tridimensión. Gano varios premios en escultura y fue seleccionada en la Bienal de General Alvear en Arte Digital. En",
+    author: "Mariela Fernanda Paniagua",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5mXirFkNU41s2kVwDzCMYNg6Fe1n78zPyClap3PHnVqY4lvdkz59d43mSAk7elPEKEfd26VFBqcP-CnPKG26HvHlyEKikEuBqkvGY76Ix313hByq-9YXpxZRuULx4BG8zNmu2h03dxAZw0BROwdxgWPTh3acelCru0ZuA96GNSuL8oGUs-PDyV_0OPym0Hlks2U-WpVMJ-IpQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2938906, -33.3056125] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Jardín de Luis Lusquiño - Terrazas del Portezuelo",
+    category: "mural",
+    description: "“JUAN W. GEZ” Historiador, geógrafo, profesor, sociólogo, paleontólogo y publicista ha sido un laborioso intelectual que ha dejado múltiples y valiosas obras en educación, lingüística y paleontología. Nació en San Luis el 28 de septiembre de 1865 y murió en Buenos Aires el 17 de mayo de 1932. Actuó en Buenos Aires, Corrientes y San Luis, desempeñando cátedras y cargos directivos en la docencia. En San Luis desempeñó los cargos de Defensor General, Diputados de la Legislatura, Elector de Gobernad",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7lHjzYzG1VcOfOI8Rb9YttBI1OcMHDFqolV5B3XKWr49tkdzGaM9-055D1nCeh9Kkc84Zv6TwpC8IGU1OerfpOyOUAbT-cb3UrY7F35f_8BW3RKcUrpG-oq4x6YVHKnTlKyQglMWWHLfVzdQHvk1S1oMnSsBViLINQhujXzW4CHkbycOtruTxE66NoylF9uiyE_LTpRB9Mbw?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2930642, -33.3048248] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Torre de Ascensores - Terrazas del Portezuelo",
+    category: "mural",
+    description: "BANDERA ARGENTINA Y ESCUDO DE LA PROVINCIA DE SAN LUIS Terrazas del Portezuelo no solamente es un complejo edilicio público sustentable del país, ubicado en un cerro de 20 hectáreas en la periferia del sur de la ciudad de San Luis. Con un abanico de opciones, se ha transformado en una experiencia única para aquellos que quieren pasear, correr, disfrutar del arte local y apreciar las bellezas naturales de nuestra provincia. Para el 25 de Mayo de 2022 se pensó en coronarlo con orgullo de pertenenc",
+    author: "Bandera Argentina",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR721N-kSjQLeWbABPFL5Cr4gR6v3ZfMCXSUOFbNna_36re4ZE0XbcgIzTgAdP0OSxwOGmJdvAHjYqr2r5j-0g-CwAgPrZN08S7xMktF6SUOMhNm69UY8hFgAUGZwCx-hASF-I2md0acVj-CLJbn0KAHB6L5_mDxfbaq83sXwZfjWQJlhPDXshL05ebIsZAwwNcxtZw4PuaqdQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2949095, -33.3040357] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "CIRCUITO DE ESCULTURAS “TERRAZAS DEL PORTEZUELO”",
+    category: "mural",
+    description: "“LAMPALAGUA AL ASECHO” Representa a este reptil autóctono de San Luis y en peligro de extinción. La obra la muestra al acecho, en un comportamiento solitario y nocturno en medio de un pastizal. MARCELO ROMÁN FREDES Marcelo Fredes, nacido en Tres Arroyos Provincia de Buenos Aires. Estudio en la Escuela Técnica de la misma ciudad recibiéndome de Técnico Electromecánico. Me especialicé en mantenimiento y parquización en la Escuela Privada Agropecuaria de Tres Arroyos (E.A.T.A). Jefe de Mantenimient",
+    author: "Lampalagua Al Asecho",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5GH8Uv3gga6IFCoFSmYNO7ex5I9VrrTE6o8vMzL4JFvywNmNXUsWbM4ePfqQ_RZdobFUdyncgHV3lFb4kkdHbMk4UlprLZMJ8TEif4b4oKVLYHh4dRsNwIBcUnMoUK5FcHtXnzG50kvHAbv5844UjKpZzFSTmrsksytv5Bj9Tk3IT69WJ30EhgrbxlvsrxsXTV8zTT52Dg3IA?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2946094, -33.3057125] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "CIRCUITO DE ESCULTURAS “TERRAZAS DEL PORTEZUELO”",
+    category: "sculpture",
+    description: "“ZORRO GRIS” La escultura plasmada representa el Zorro Gris o zorro pampa (Lycalopex griseus), canino autóctono de nuestra provincia. Sus dimensiones están pensadas para que se pueda apreciar a la distancia y la imagen va mutando en torno a la luz natural SANTIAGO DONDO Escultor y artista plástico realiza importantes estructuras en madera (plazas de trepado, juegos infantiles y carros de comida). Como muralista destacan sus líneas naif de gran colorido. https://www.facebook.com/san.dondo.7",
+    author: "Zorro Gris",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7kXeAdHrZ-X5bsBPmoG97NmB6uYuOsiMm0CMtT-asocEA0bAELygbRZPu--s-Mf8AsEBEbI_8LlG59bsNsUjltU7Jgfo9x7DogTLPCPsDA0km5K3dTaNiSk4DOr_7RHwn8M-Yz4AUNGvFaKQQWL_Pp5FoQieGYFyBwQhlEK8y4kKUoxqsltkgS4jFfot_XGE6zxXQusnHYsFE?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2962031, -33.3033625] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "CIRCUITO DE ESCULTURAS “TERRAZAS DEL PORTEZUELO”",
+    category: "sculpture",
+    description: "“FLOR ONÍRICA” La escultura busca representar la simpleza de la floración de los arbustos puntanos, homenajeando la delicada tarea de estas flores en su armonía con la fauna y las estaciones creando formas y colores dignos de admirar. Quizás también es una manera de valorar a su abuela, la artista plástica “Gringa” Poblet, quién dedicó sus óleos a representar flores, la obra está emplazada en la plazoleta que la honra. ANDRÉS LUCERO CORBETTA Nació en San Luis. Mientras se desarrollaba académicam",
+    author: "Flor Onírica",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR61n0OKJ34nKl4agQkkHygp7reyuwV5VVySVPjPy_r0xhhiq9xIt2qWd3Vjr8Cbd88DSbyBUB_5nBygWc_JtAdo4vcXNpOD2zuulg9RAyE0WTQQXm6ugylcEkeBqIiIhpN6rDPWHuv3W3CerMvTMHDm3FXBFUwU5Q5ovFK-JUtw1SyIByFHkmvuHO79zfaOZKf53k31HTrV43M?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2968906, -33.3023125] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Honorable Consejo Deliberante de la Ciudad de San Luis - Colón 561",
+    category: "mural",
+    description: "La intervención del programa en el patio externo del Concejo Deliberante de la ciudad es una invitación a hacer un recorrido por la puntanidad. La pared de aproximadamente 12 metros de largo por 3, 5 de alto y el artista local, Víctor Canaviri, es el encargado de reproducir, con un estilo realista, la historia pasada y actual de San Luis. También realiza retratos de mujeres importantes de nuestra provincia. El diseño se eligió en conjunto con las autoridades del legislativo municipal. La imagen",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6GT85-iZNzSoCT-dadG50qkv8DQGkwPB-ZsmTx8hOF26RwgX1BLMMX38AO8g9_Qe32yWL4ThiazHYGTJUyGizb_OTGzZQbyk0xsyVNTuqIeT56h9HXjtUmkvu8bu2BKj9L_xvRw7RYF_IHvyuUSiRcdts0WmxkvW18JRdUqfDrXNRALz4OKIS6ChGzr4-VaEIaWQ3RXakn8YY?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.33422, -33.3045353] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "CIRCUITO DE ESCULTURAS “TERRAZAS DEL PORTEZUELO”",
+    category: "mural",
+    description: "“HIJAS DEL VIENTO” Inspirada en la leyenda del clavel del aire, la artista encontró un hilo conductor entre la planta que nació mitológicamente de un femicidio y trazó un paralelismo con la contemporaneidad del empoderamiento de la mujer y su lucha contra las injusticias sociales. La figura de la mujer, representada en la flor, simboliza en su verticalidad la fuerza para resurgir. AGUSTINA BUSTOS VILELA Nació en Villa Mercedes. Artista plástica y escultora. Expuso en el “Carnaval de Venecia” que",
+    author: "Hijas Del Viento",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5Y_VW3yo_9PEPFqV6Jqfbn0IgA7K9FBoctjX2lyEipi5lGnhPU2cIKXGs6tmC0CW4r7an599Rf4diRKsjaYMNBCGEM0QHpoLFJxgxJRBfyllA_SffdU99_nyp_VwOErO9yeCawljp1kYPDqZL7OiIq6cO92DQY3byi_bYYQ1hdWoD7JoQQnD-vvSoI-chJvls5P8F6LTR6w90?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2971094, -33.3019375] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "CIRCUITO DE ESCULTURAS “TERRAZAS DEL PORTEZUELO”",
+    category: "mural",
+    description: "“GUARDIANES DE LA MATRIZ SUTIL” Plantea el concepto de biodiversidad sustentable natural, como una estructura imperceptible que organiza el ecosistema. Compuesta por 3 módulos, la obra recrea una planta con una simetría radial. Un cuarto elemento, en el centro, aparece como “Guardianes de la Matriz sutil” de la serranía: las lechuzas simbolizando los sueños, y sobre ellas, floreciendo hojas y capullos. JAVIER MEDIAVILLA (JAVI KU) Nació en Villa Mercedes en 1973. Es un artista interdisciplinario",
+    author: "Guardianes De La Matriz Sutil",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6sG61xO8_Wyr2Vqo0kF2LVDItDre-xCKNeMgM8epjuaWzb-uOCW3aA73KcDgfDAMDfHD-8GMNF_uJEPVi1DmmHkWiapU-cPAppvrrPMYtb96aYUaNriHcWq9PMOvORyPKZMs9q30hABcUKsxorCxJuWoYodUoIK1i_4tYq8Yiv3ewALuRhLrVvTnrNhZ_7tW4Cv5-jmgy9kEQ?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2962969, -33.3018125] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "CIRCUITO DE ESCULTURAS “TERRAZAS DEL PORTEZUELO”",
+    category: "mural",
+    description: "“EL CENTINELA” La creación escultórica fue inspirada en el caburé grande, logrando una pieza de grandes ojos realistas que miran y vigilan, y un cuerpo con aspecto oxidado que comulga con el entorno paisajístico. Aprovechando el viento, su cabeza genera movimiento y además su plumaje, compuesto por elementos colgantes en acero inoxidable, crean sonoridad. BETTINA TARQUINI Nació en Mendoza, se formó con el maestro Martí, egresó de la Escuela Superior de Bellas Artes de su ciudad natal. Arquitecta",
+    author: "El Centinela",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7WNcLf1BgcoUNr0PLi_EhHy1Yzb9G0zQidIw8Pro9CI4XjFGTcnlXZp67LEbnLslsu4DCYK-yEyKyr0UsI0j4TAFL8BaiscG9Un-sgvDDdpsTMuBhcSEAy7f31NyaqfTZN19GVEDTIhCzBxd7l18sL4kKCzwaTwwimQA-QuBrwQJBtuAGfGJGsR9MLRYgwG6gJzqcHYHsb27o?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2938906, -33.3015875] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "IFDC San Luis",
+    category: "mural",
+    description: "“MI TIERRA” Primer Premio Concurso de Bocetos y Ejecución Mural – 2004 Este mural de 4mts de alto x 64mts de largo, intenta mostrar, como un gigantesco tapiz autóctono, las maravillas de esta tierra. Destacando tanto los atractivos naturales, como los realizados por el hombre a lo largo de nuestra historia provincial. También la flora y fauna, junto con el testimonio de nuestros antepasados a través del arte rupestre y el habitante actual de esta tierra. Actualmente el mural luce piel de mosaiqu",
+    author: "Mi Tierra",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5Klz5YoUxMz4K5tng-XpPqzKlU2w8WPlD-OYpgEG4K9yFDL1jAkicQrp5ooYi53V8f6A2DhnBzdeZOlWNygwdjigWfGUpDHrh2Gm6CW9721AcuQlmAzm51YZfcHBbtlEOWi_N2ZjYZhkxsmF2fCkPt8Jl8mdODCtejUtK814wRwcLfD0QfHbd4Mk65kYG9dr6BbhK06vK_0g?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3474808, -33.3014327] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "CIRCUITO DE ESCULTURAS “TERRAZAS DEL PORTEZUELO”",
+    category: "mural",
+    description: "“QUENTI, GUARDIANA DEL TIEMPO” QENTI, en voz quechua, significa colibrí, ave adorada por los pueblos originarios. La obra, con la estética del origami, la componen 3 elementos: la provincia de San Luis, la Rosa de los Vientos y el ave. En el centro, el calado de los puntos cardinales, representa todos los caminos que se pueden recorrer a lo largo de la vida. JULIAN PICOS, ARIEL ZUCCHERICZ y MIGUEL ANGEL RODRIGUEZ Este trío de Escultores eligió el Valle del Conlara para echar raíces. Llegaron des",
+    author: "Guardiana Del Tiempo",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5vT161qCT12EKClAKrgMcQd13L81xs2vsMvxWoQy56uaO04IvwhXNIxI98EqcGIf5qudZMVZGYOOymtfzKbrBalhNNU5qq1Ttk5NCmb73Mf8TTqHGPeAtR-pDfn1edIJQ3h6GJzrEWD2vmoT-faDzLmW_SPMP3UDPiMdlza7wCCkR0neAjNd_j8P_rIvuPpYMFBkj2pLjD44w?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2932656, -33.3017125] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "“HOMENAJE A LA GRINGA POBLET”",
+    category: "mural",
+    description: "Catalina nació en San Luis en 1904 y falleció en la misma ciudad a inicios de 2004. Se crió en un ambiente artístico por ser hija de Catalina Romanella, hermana de una de las primeras pintoras que tuvo San Luis. Desde su infancia, pintó flores, naturalezas muertas y algunos retratos tomados de fotografías. Sus obras se caracterizaron por la representación de flores y de naturalezas muertas a las que plasmó con un estilo intimista. En su paleta, predominaron los azules, rojos, violetas y naranjas",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR7SnMenY3WGxuoHeby0ev7H3dV7DYslgUNqq0LZ52nEqcfo4H8ODs_4cBEWjvLBmWeirNS-fZv_rNet1JmUv2KTaTAHib60wVLnhblscfWP2OlRXTjziTXVhyMAEuCOa-geRwDviFvuz_92F5vzgjJzDO3vQR59vHTQye2b6Evv9D-arWbC0GcbyjSGWNkC6yrxglPFz_fePw?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2959219, -33.3024875] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Mural Edificio Capital “EL HORNERO”",
+    category: "mural",
+    description: "El hornero recibe el nombre de su nido y es de esos pájaros que pasan desapercibidos pero, si observas a tu alrededor, seguro alguno te ronda. Ocurre que, para sumar un dato extraño, es un ave caminante y suele hacerlo sin problemas cerca de los seres humanos. Científicamente conocido como furnarius rufus, el hornero es un pájaro de aproximadamente veinte centímetros y plumas de color tierra. Este pájaro albañil tiene el hábito de caminar en busca de palitos y otros materiales para edificar su n",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5v41VzYnA8bGn2IiVs5KMWg51NFMRUo79m0gMEZKvIWfRFbGrLtc3XiAaR68mjCTkpG8lkx2xErePQL2K77NYbevZS5t4utgGKksRf5Grg3JYZda77xJS5Pw4zpEsxiqn5AcL7mslBut9eTbezHQSevPkvqtNCIBXkdaaVe3XDiFw-7zs1qB0M3obPzFYNwX9ywqEaZCoRBg?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2944531, -33.3018125] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Mural Edificio Capital",
+    category: "mural",
+    description: "Estas obras de clara temática femenina fueron realizadas para valorar la libertad y la fortaleza de la mujer, su sensibilidad además de la belleza intrínseca. Todas de carácter simbólicas, no pretenden representar a una persona en particular sino al colectivo que representa. Fueron seleccionadas en el 1er Encuentro de Muralistas y Grafiteros realizada en 2019 y al mirar hacia el Norte mantienen sus colores y fortalezas casi intactas. VIVIANA PARENTE GISELA GATICA Y BETIANA SOSA. Estas artistas c",
+    author: "Viviana Parente Gisela Gatica",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR6nCAbpG_WHLPV6lBi-AxO082JOqjUNcMEOt8sH4EtiWbQfBqtOJ104O3iRrDD7t-UGxJKytSXMuTZKqBv98PPA8-rqC6h7v_FhnBZHESzMl3xlu2HI1aVVo8r7Daqtr7o6E7Va6emEe0rllLeSRjeCpMQlE3bDLcSo-PUMghDraC9BOizW0Tf9KyeR0ZUeDCA-VL2s_sE7aA?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2955469, -33.3018375] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Torre del Ascensor - Terrazas del Portezuelo",
+    category: "mural",
+    description: "Terrazas del Portezuelo no solamente es un complejo edilicio público sustentable del país, ubicado en un cerro de 20 hectáreas en la periferia del sur de la ciudad de San Luis. Con un abanico de opciones, se ha transformado en una experiencia única para aquellos que quieren pasear, correr, disfrutar del arte local y apreciar las bellezas naturales de nuestra provincia. Para el 25 de Mayo de 2022 se pensó en coronarlo con orgullo de pertenencia al pintar en su terraza principal (donde a veces se",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4Xogu-RTGbW_h2r5Ap1W0yqoOWDkxbvJT-RO2pa6r2OYrmvlD19CdcfGcxK8bYQwpDXToYzPf3dajPRFEoZSy33as5xZCgYtQZ4B7MbKntEA26JyBcP6Wg92qKrOR2k-fQyPUsDYkVmPSutjg8duRgHgNrhcBNHgxqPbr8BbC5FSYkCCSuGIPuL1a9FiLIFzDBoFHofQXvrDs?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.2952656, -33.3032625] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Salón Comunitario \"Pueblo Nuevo\"",
+    category: "mural",
+    description: "Este Salón se ha impuesto en el Barrio como el lugar de encuentro social por excelencia, ya que en su interior se realizan capacitaciones de casi todos las posibilidades expresivas, culturales y deportivas. Además de otros talleres que promueven la salida laboral (moza/os, moldería y confección, entre otras) se realizan charlas de interes sanitario, encuentros familiares, etc. El Mural contiene un paisaje sereno y colorído en busqueda de la alegría y paz que emite. En otra importante pared, a po",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4rgWiv_vUSfv_sBL7QLa-5EHiXT6L3cAsRjwlGPSyZFcy8NlPchJb-VpANbaavNCqWbEnYR23k4-WbylUR2v2VrlfnXJxp7pGAiN3-PY1JoskhOIEql10zvY1MoTtkDcZLiXfB5jw_4VeaEAQ_1I6yD_g0TT26NT1gaVUIjcjhcb4X1cCpRHHID_lEAZ2uYExced-ouyT7qD0?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3200127, -33.2856109] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "UNSL",
+    category: "mural",
+    description: "El proyecto consistió en pintar 3.600 metros cuadrados que se dividen entre el bloque I de la Facultad de Química, Bioquímica y Farmacia (FQByF), con la cara del físico Albert Einstein, y en el bloque II, donde funciona la Facultad de Ciencias Físico Matemáticas y Naturales (FCFMyN), donde estarán los rostros de la física Marie Curie y el químico Dimitri Mendeleyev. Estas figuras fueros elegidas mediante una “lluvia de ideas” con el equipo de trabajo y el personal de la universidad, estuvieron t",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR62u8X4lTT6D0zy6vI0eeQAvckIcdorxjlV_NGNKvmX5r1iGFefM3avklZfc6wOmwTLu_GWOVtCZ_PTdAs0V7iSeqxIB3Wsh0dK0xWcKkVjnCPiUZmXRF-LU78Qh_YzEZi81PqcMdd8nWDwQ2arm-2njtv6EML7pgD4kxK8N03WMh3BAWjrYodABf1byrXOYdltkZ2XgtwqMA?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3401491, -33.29151] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Granja La Amalia",
+    category: "mural",
+    description: "Bety Sosa",
+    author: "",
+        imagePath: null,
+    location: { type: "Point", coordinates: [-66.3507236, -33.2989256] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Abelardo Figueroa 974",
+    category: "mural",
+    description: "Art: Maria Pilar Tolosa",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v6obwlpgfc1GTzG0ixlK6S1J0w8rvRPj6bIKysKGC3lXM0SEcztMPgmSyPwKDvb6ofV-rzBCXX37ztr17IB7a3wNzjs2wQ7pWNKYl87uEtB70P8bCmspd0F8z5Rom2ikelGVbYXVYlVyt7pP3t4XQOlD_B9-3trxYhPUSAG2PQG5hH4LPt2IJQmFB1_qhK_AJHLGFU4d1qXIsHRxejN39DDDAHea2jlZO3b6zmQYiWRZqxPwct0GlyyYXO0AA6PDwUnvTc5WcS8Rv58n_VmD0V_vp54UGyB6ipxPyBmwg91LtBSF5gLtESDcncj7WRwJf36q5CJikA7GDEcCjcTCPz_DI7WqSpP8C_cbalppGHPkD6LrAYktXWm0NqH-T1cFcZhViL39uJUKJJ276RtUnHACHfwAIYgE93NAfi9npradpAXRqRUTf68ZY5wH8hzqufgKsn_R-YjL-Gfl-tNyCVVB2g2_t5azUMZSIAmiy_aW0CYmyLEkxQ5FuD9vOEgBKSxeK_hLn-LxDMJNxrJxwsxwkUdL4FyfbXxOLUKjlgMLe_K5NJHIXId5oqwCjDh8_fnpnGm2RuU7gOVodYKoxR-9sq5QjR8Rk3XE1Sra67aCG8wh2NKx2qIfnOkIB4-cLafXN8asbmNj3QWdYsjMtk25e5VHJD9IQFr4Ag8VAJQBkTNScbSYvPBgFEJ5UftenXcEE6vUGObYsI3jQyEZ-WOccqe3n261tyzLKMvX1iG51dEZCH9TB0JJptnRKj6x6xCRqfDlawgeiX2gN3gWWKkImFmUfA-oovjW-KQyAOVAejowt8TYjUam1CjocnSZFqeO4_wgETzr4V_B2FMkaDlkH8jVhgMfueht_TcXxHK8_VMCpNg0fj45JU",
+    location: { type: "Point", coordinates: [-66.340284, -33.284179] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "México, 1596",
+    category: "mural",
+    description: "Giuliana Herrera",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v5EScC1UVPHkFsQ9518BQQQPT4TBi43zuAeB6Oa2URCF0pjqpt1m0lzb8trmML7CoHulpUXtgOvmKYEqO0lU60-IJIge55l0U2ZbP3KOYMIUmWFm8vE4lfIJObFQh7dBQ3v4dAFyMSjnplhBtdslUgXmQ0RkyXt7cF_Obu2ULPgPsA8DJlaWQEXi8A6DU6fGCPKAXJj2OFVrfqQ6FLOFNHdYMCRZ8U5uhILj0-gxNdxHJCF7nypc-r3c5OAciQzWIWP95Ml5wvAvpH1S3lK6t2uNFqqoyMzzoTWk9solqm09VRyITxNIuOSZdis_2DCTLVkLPxKeo2KzQanJkd1I7FEHjzU6hz-KF0DRea-6tqGlawZMkaRg3066Vyo_wnZVUsm4gZpXiXJkwMerVvu0kkYNt8dxvyWTKiV5otpM4riBQkvtvOsATnvG4XH0Cwl0Pg03bwwxH3YMSok6OYy6wNsg0dPeOTFqkfOWuecyiTDpaC_OhcIJNKsatTFcvbXDHA4caC9HGwxyVSvP7fG9hynY5vXQIE-f90oDLpMKZ-1s9U3Eh2xg2IsPRcRONTPPI_Gueeng-_ILN9pbOwGfwNwt_HLY-oFYC1pH2gfm2Xos1Ushejfap-zWdANCSVuAu-E3XQeOwR8nATYwRKGNdLMv081a2hV9Ee-G_ZpFS5P4QP0vvncthvKT7YXhjpr2ojEoWO_Y7zcCWYQiszhMSl7GdHxzQWO5Qriq5czfFex8wlrNRhLMrkoNwtm0-HU6gnF-XneWKrzdyuwzRx5KzqyET5ogaAAbZ9hllE--lbynsuPbzIJVxF5cR5Rhid-NiT-oAlyKvFh6gedR2i-FVXxTyUKKh9HLOw6GfDyiTajNqTF3xZ28ELdTQE",
+    location: { type: "Point", coordinates: [-66.350936, -33.285231] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Falucho 2007",
+    category: "mural",
+    description: "Art: Aarón Dorado",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v7DUKsLxuwOtLm0URCK_tqUcuX4VSXJzhjD9AdgwSI5bUnPGX-S1JxvK5NFHQX66olgBRW7WGolH9TcTotMXXm4RXqMLZ69xzi4h7MmAOdkBSXHqDmMpD__uAzLQxX4B3pbUK9KOwoz8Ku4AOPXm-Bauut99nOOH2TL1xHmgUpugiq6OhZPN3Nfh7QJaSRowyqqfJKMVyDLSWjyvwatzZZ67tXd62X0kBHm9YpDuUhUsyCyy1WW7_khqhfsiXKUycYbSyW385D-Ens9H8-sq8u1nTTL8yxgxVBVR8bINJTXDm--ZKBQy1eUgGsf-Rh3wGGltqgXS24SSVNazBegn2nt3SmscgQFntWS9HrJv9qFAbT8aeziYZML3zp08Z9XfKWyVgOBZpfBS3B31c70cfAqp9ZH16t7UL-rpe3I_UQop2tzNOqbgf926n3n6OqYKYR9H2HAkKNgvlU4lV2R3vDmg_B9yxjjcj65bFOklWz_D7cFgH4iTozfgHzUDjEzLSxnb_a4e9YyA4WI8wT2qxCZAAmT9jM7cWciDjKvJgZ603Pi0xycgSInGjubSJS3LuXK9oweSXph3EctM5u9o4QNkQOm6dNN2vwzE2ot3pw_pTBMa4-1qnAxyWlTvRBTwzStDl3-3Ev1dBQgY0NUYMRbZjub940mrr-E278lj8BORs8mQR8P9YGDoYGvneFGDbsmAsrITqpWedA75evvzPlWY10NrQC_WNfc2cIUcfmpNjQzrsqbu6Fg6qFMAcoeZtQQTAfi_h_QJfKJDmFydSctNOWecni8rbjLxG76aUBsf7colMUIKhN4JR0Yhc57pVu4IxaMvaUr6d_yl1K_QYl3IFcZwGngfoI89koA6OCLyX2xcgLir7Q0nA",
+    location: { type: "Point", coordinates: [-66.347784, -33.287631] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Balcarce 1882",
+    category: "mural",
+    description: "Art. Tomás Nasiff Alí",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v5HIhr4oO3_vNmAZqQh574hslXt5X_zQhTuKZd-uD3N6twERp8seRlmfTSw7rqyPnF90xRcV3A8DyaX9xy3mv-_lQRpmfHVstGtfGrMcpwsDd8-GXdBcte4N1oH7OyCm9dDZuMyevs-CWP5D2pBdjDl91ra9CVMAkAeiKOd6BE5-i6ZFlodwpm2taiZ1lbwTR_oM-wCxvUNvQhwCXVAVXKp_rEERiyLhzlnQP1ibr4qtdXN4Q2YX6XJOz_cx6I9MunN_TFUONYW6ngAx5UdbOM3uF89HP7ZParI_Pus_-vb4VwZnXYqr8jMi9fNtFVp22yHo_lJpKMSuozDOsQ7NQTNRrKNnc1xXlnHseiN_PxC2ZsSc7UtQXPfuPj91v6haSA9Yz1EHeHFxhJkJnEqybjCOyGCkjSqEA9KeR0lMd4vbCWMw4dxAcnBGzt5X4XGWmrRqbyP5q6aX4qbRc2z6iVrMdcVwGwb7TZ9sfCEjjq5HGrg5GzFbBhXd3aE6cRxXN69VvQ2ICBDtRAZceCAO2KI2hGGwjNlPLntbqKwCziEeztgxqwmBfTHxDMpBggv9VnyCwFOlmeA4gfJ27jCQB_vt1vOQTb_5VdTifoHFqVKEYuG9TaNrXIKEI9sYJa6LaGtyHHuRArzCfQNY1_a1CDF01HL1h-j251ruYi-l0MXMWBrOLv8-QXDQOFbptvoAJAC_FtzsoA74yu9dxh_UvyA3SPU77AGPz7FR2OwNXiPM_71tob06J3-KABJoNp_AcPtDcXYEaGGnCgby36oW4yNaNScZxKX7KvGYTJm7oZGd2kaOopQZZjFgbWTitgP7FCyoigBTkPnNXodRjPlLbnyPxdxG5Z6Ck0Vnmdlo9Sq9c6YLdw-0d0fYRk",
+    location: { type: "Point", coordinates: [-66.348771, -33.311764] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Mendoza 31",
+    category: "mural",
+    description: "Art: Nadia Glow",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v78_npdhd2NTsB2zok-MV-7Z9CZRenwuCzx5zjX3khjIHQxqrbQBRqY7PHEp-x6vpvZi3YEixuvdPgjE3385FMtqRYdHi63ErwCejxb807-g6gFo-IEElVdjAuFe88-6O0Lj_JEk5bB4bB1J9OWe8VptG_SZcQvOAwC2KgwOfbGfbTmLuvLLVqumc1WUF-M3rhfrWeyQ76Kfvl329kNlykCtKQDt1IseQQYFfjpLmmOI51PK0n8bOSsmcTbWeHEaj72X4RmlQwsp7M4kylbp-gNboHCNuSEgPc9AWVv2EUbL7TVe5Ht8yFSb3P8VB6sl0537S9cqPeS__oMoMBvj-iaueydoE72F7bMsbNiUB0gi1Knf1Voyo7AaIAqVA50Qq8HLsysWoTWh0Uv7E90J7-qMnw_MX7xKu1zAne72mtJAeWqWMmwNoWXmBoTdmW-WDJwSaEW57s6uUw2CezA3YP6-AfnXe9QHoMuY49LI1iNp2URR8_O0tZuDZvOGAicPWNRbaGfv14DP9Oxhvnir2iSjz0ANwN3ag7EYqZHJnpWO2AQsrzgckjX_nQ_IwR2yGgv9VDYGdIa7ZnER6REruvVQC1pPiLhWWZSlnf1jG7R3EWPk541KZTvMvF3e4loKMFBwLNaQBp-4rDd4bQm5j5gX0W_XDMQ9UWrMmDH66PWks0lP34u4CTiEkNdag6o5e7tioc8_wJqMwLLBDiN6jPCmApfS7K4x9TYfNxPvMpIjYt0kU2NHnUv_skGnLR13SEyxY6krsrdcURoc5ZGriIOQs54YEdaF-lrqwEDsI5a0FZiCO-zNkskOkzWdtg54pJwdOgSPAOfL2uLLAUp_ujWVQpH8SCnboJHdOZ2LtqKSeO9zRjQLS7_Ly8",
+    location: { type: "Point", coordinates: [-66.347989, -33.314764] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Cerro Tomolasta y Los Chañares",
+    category: "mural",
+    description: "Art. Ariadna Greulach",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v6af0rsYCgCIo6CsZHB-cuDTag_3KD7XRu5oCPx_PVjnGwmtaFHbZ9z7qa2OdU4II17GJxgktNRsKO07zRO798zN_B3SWZw6bnitG_ljWR_-GKX5e4F1FvKtoWzM0XbNwchjsUJNdPenPZSuym48bHo-HmIZYIAi1t2KMyM1mrscs2u1_hkmD2WhehsudigoJzeR4clT25F_JLHAUnTdfZbdlUgfOuhf3Nb4YsVUz6jfzS8PElLX61QIYQnG3Zc-HpcZobeUXXU3F33MdZaUGyp0DvRl9EwtvBS6dPlx4JX1vNfCd-XIVM2TZePo_lpaxTzOFujGpzZ3wDPmlQoQyQnKTgdtNMlRfcORNdiHxxjaiyDTx2yC0PJhj1QLFU-Pr-e94Zg7Werrgi_ZcmJJXWQMNBoDrYkdxOfwpuKjlqlrqfcHDoJDe3-feuoX54QraG-ol2MpfunpvTjEP9nLQN-BdVxUE4Mr9rKzbn_CCqkIovEEKrC1bf2f8F6nh4lM_GKW1_AMsX1i-q2tgG7vV7GcrE2h0ARgMt5ro24xrEan6uK2UHTtQN2Yp5wn5aI86ZLN9w8Rr4_5Mtx8OR-A20twDPF8YnvGQrQZryKYGu6MCxeWAejgzMMWE689DblQTe2Rq63nUqIh5bBCVguVq4X3_dAkuIiZazXvdo1ZoBz9EBbJUSHy-sCaEspEydGlMJxIZCCC1m9RW7Bd7-AEpMEx7CHw_4ejpyp2IAzXKPA_xV2eny1jWMtIVFrccd4oLwFvJOF9cAnKAhhbmpB1304eH4Alv3dOPssbWDQTA0uhw18MrKGxInIoG6lWzUbUBDN-em9DEZvrlKxTPNNwHhRQrvDYncPK8xLulFa3vt3yiedkMWpyh8Arf0",
+    location: { type: "Point", coordinates: [-66.305961, -33.28464] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Punto 10 - Monoblock",
+    category: "mural",
+    description: "Galina Besedina",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v7kUBWSslsO9PtEuNF--Qj3XZx3uxh4LsZ7EkZBaPqKmDH7qwBAhvkTHD3rWJCLM75brXbJ49XGtDMn0_sq03OFON0SZBbP7rqQoKyy8r5UZjuWCcHa99yQcBbshyArd5BaJbIhwgZQE065jAKphRtjAk-k18_b6vwiW2Tpv36VUpqvqD-_mSf6bFm6GR_L0Ioou3VJYTjd0t8Op6s5ei6UX7mP1W3nAkREEsL4z9sgTZWRzzfKIsEPshPf4XAlClzA9YRNAzw-B8SZL-2fE-lL4R83tQzgC7a9n43h8SnuqkqK3vDl2_VrH_j6sRlV_Ywuco2Teu7JX8yWbk2rYasPASN-6Yf5c3PAOcA-XCZEp5dN7lS_zDtN0iQ2D9uQ-a5EOHgFx4hFUyVezsuuJGZTRDlsbS91C5rYSXxJL9ChmG35kbmOi4Upw5st7kdM-5HEq27XgTGd67sPf7l_acelBqAwvRRUMEBcngZgO3QYV_DwwXvlPImhi_2zVX5u40YFx8urnd_RplBOB8zlAcbNufyzObYCJrwKUpds__3GphwdEnkG8l3aTWjAalNvmR-vlY6WnwW2P772DjwZIGcOcTpbEVzD0pWoLHsKJMjiytNC1-7Ymc2wTlxCg08psbb3AHbS3H93mpkV7P3e3MHpqpZUksswREn6UFNd5EOaH6TYVVHU61v-h2U02maapNxWKI2GpWqeU5uPs9nbu3OGw5BXBeyn3KJRLyjJ_eTq0ibLzQtAOGhJjSUllQFBvIikWQphjFP9b65OTy7j0BH1ksnAU5VozMgjK-19T3lD0JPaxKrxeRHLluU4Qs2pvEa63XONyRLEVSPpYx35jA-NkiuOnUd3UX1c_ifHjjp9pPB_qEse9wGg0ko",
+    location: { type: "Point", coordinates: [-66.3198028, -33.3102772] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Punto 11- Bloque 3",
+    category: "mural",
+    description: "Mauricio Almirón",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v6MfRJCmCEemk3NbSQuIUImhJrY9BqvSyA2bPB4B4EbDT3a5gLKqLZes_vbk3uYRWR0cYS_Iy6xYkQMXHoIM0zlJuP2lcddcKtB__6AA2MXCGAAvp-xUnvtPND7yj0Mc0XjVZbMMWbAA9MU2RH7uBWd5bpJbx2Vnf_qG7P8TDMVpWmAf-K9pSaFNXAr6XMqlVFVoA55AvXC2-pcqdEsHpi_9RSZCwkpbM9ThpAKkwPAoa6MKzvL1UyPyj4iBTKEIV4PxPzesMYIx3JvPWAQ2yRcQxsgQ688KL00WQaNfNkiAwSe6aisG2XVPyYJL_qMs4aBwYRHEa524IhvuJFcHHTpdZ1DC-iRRJH59tVq__Jkiu5fOlyYjeDIAAznvy_An9TibhvhyfrrsmMadKrMhZhtBh8QvD6fH7vg_iPCO1EvqE4YzrsNowHIth3getvgzTvyQ8G76UzwP8oSVH4qE_250jfMeD73FstsdW1nTym8n06990ZUn6m3S3Py2xakwlUIMdEOjnSkFL6RDW2pJnH2vqynm2_6vDkGJPQHC1VPUwO9tY3oSOQV6Y3Qj9Xw1jMx3JWxISG1WnjyBe0HL_VXsoKGTqLUw47ytV8tgaaloTfrUu8WcOO9AbUy8CEc0-mGheJAhQRykmdY6bV6gmOTprWfJ6fO7F_8ndKdYsYgINzokNCJ8T0lodCgPseqa8qtIBWqPqMosN7seA2CYomVerommHgoQ7HHpwv2wCMhpQeuEKZLRl_3GZzPhTff5ZTYw4bhx7tli4yxNMN4eEMY_ed6k_759YegWXzoItpYGpdWcuwUDS472USy5Rzrz7z_0Z-SZxdCwlfZSGyFlZXuEiLEfcHxVeXLvPf4vZiyCihXdAsKFGsaQtE",
+    location: { type: "Point", coordinates: [-66.3209783, -33.3106813] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Plaza Salvador Segado 1",
+    category: "mural",
+    description: "Carlos Marcelo Lucero",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v77GF-Hi9KQbUMSc33xUqXOWjWp5e4nNa4D6pckRKbboPDiRipDJCBnyFqbzXryxCNxQVYgHBo2IUI2CScS-6VkXkIYeUaG1k1sOZFG-VvUoRjUElxCyNwBva5If-Ox2J2EKORRjKMg0CnOEE12JOIGB0loDVK40fsRBZfwN1kfoysE8Tunv90DgVtrcXHdBbICDgrnoWK-_SdNquD8rWDQRvdM6alfnE5XPzlAOAg45Kc6qnv2lEPiT2Z3T0a1HTKrd6D58BCRI9rxGiIvorWM4PLNxkXdyNfUGZxzdcw8-Jo5t7myeN3gD7FffRSGi6zAsSPuIJLmOmDc6xUhNqPnwNqC9gS7gDOSpZ7K1Ahouk8fWOT6JlpLCbHZWj1DPR8nZbpdXCd0idx3s9Rn3y2zggEaWVGvwFljeN5amjn8BM0SvCYOL7x5989DFcZHhh6n4bMcdd9TTziWBZ1nSLwIcuIwNvU4F8xm0XrgRlxqr3qvezXht1U-Votr-HeeV5iCIsQScywXoI8awZXqsRnORbUR_v2gevmZRcEfP7X_JfKxR1-RWmTYJOaYAEl-knWXoq_TGN3_fi5ycI0gc2fJZkInjtbzu0404c3g53omg9N9DxHK48ZBLpiE7FkJrL0YGiIxzbwr-xyqlokDHQVE9OGt6gzbTxyWQ-6-v_6wrDMyUtA26qJviVRhprAVIjO0N682k2OBcQKNPkGODSzTzlXRmHpG2BVgf0vb33ko7jAgnEM06A3AEC5cA6Is42Zqv88TXcQWu-OJlxTsc7XhNR0nS_J5OB3OcGDblQiP6oBlV-pJ-PFpjUF7JpHWgR2vXHK0BqvTCqhRaeo2_I0MOktmHdICmG6e7mekRnMgheiWFq5Ym_4OSw",
+    location: { type: "Point", coordinates: [-66.3175957, -33.313969] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Plaza Salvador Segado 2",
+    category: "mural",
+    description: "Julian Geiler",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v6xopDc9qKBQWy7XK9X3UT_OWb7oQh3n0DDQtG_d0YLWlNdF8yFzUy5PVoabtUuTeafm0F5xDREa54P-dSWrpCzOGXV0i4Tg9ydaZixwvpeyVd-9-BlQM2Bby3801zXw0DNTNlhk0SD8xMIGg3CA-rIZLva6ykBXF-NUjGtsW2a4i2Nqr0igv5l4n3c5K_5YXiTWYsg0qnwyeWGNCpY9uOjTcd6U6jko0FGsxAOvkr42gD7WCNNJJmZ0eJB7wQzijq5kbdIOZvBqEhXkY_GzQNO_JE4KFbwItFbZ03Q2niXD0AJiBFVanNuxvNuZizRNMS75r_TCK-WjMQ5o3VsCeAnQ0GJej65VaDAkDIJShD31nMPLVM8F4Uv7bHHlbK-EGgWw9oN64BG52S1mgj46HPzwuCo2GvndJZuJ57H52uxSozCbw-glnBL8RYH0AL3hmnSmMLoA7eIbfpCTaZUjn9tcFAHSPtsD9Az9M2FgxCzwTapMllQsmIUfIJKH5dkiAgVzUr9O_nKVjxTPI65CxDsF47FGQnIzOgPy14EfcvlHG0NmiDKPXXyd6bnu2V3TS7pH7zjC5iMEwHsdekaBopbVQE5qjmjFQUH7ytRMnlPbZmJk0t6OHRtJmBhgGnx15o_6rPRaJWCQmDCRgYj5KD-EwEdOC5UmyQwZErh6OhDZBLD4YAu5N2Iw5rWl9Uy4kpVxGKKR2muhYlaQXEzZSkg-laZtxansI57KJdkOrKChhGd9MiavI66lytPlugErRnbHolJ_8eb8DU9VAi_ASWl-dUpSUpSTqSewd7wlAN6mtgYEi92env97hxTBg0O7ClK75tap34gdpwYHSAMiF2rc6BM7t3Q8TcaGBOuus-tPlgpxqnnS_R-Kd4",
+    location: { type: "Point", coordinates: [-66.3181242, -33.3140778] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Tucumán & Chorrillo 1",
+    category: "mural",
+    description: "Cristian Acosta",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v5-X4ouuE0pQIveYI9E7pYx6-n2Rdv6nlCV8LrDCiM9vJdUZwJgK8B_VTsz4pDj6oNLmq1s4BbNitXE7W9XWLCi7jakCyumxuvHZzVVubcIQgGwdewd5QSOmfR0jbYgVraqKKnwKbPvK6J8LUUtxYinfcvbioCc7ysNY-4SzWzezAZVo0lDVwhNMEoX6UyRmVgCRtcF7rpTSRgnIzaWCI4JaFaEVy0S4U0dImUYeZ8C6m8R-LAJ7xG5oSjvrl_-aIxza6Zx9ZrHJnRp9xcV8w0Mmxq3Gi32Tww8rBMygNBSkixTYUzoICKzORIsS7IOhjCzKImOfmy8gpvDHyCWn0c8u8eKRP-YENnGd08tYOST6fnD2OC31h3L8XPqNWND5sFkePG4b3UXXQ00bo-W0F-mkStJ7lMpYe6YEbW7L1S_ZWR4awyn3TCOVWGAjO0ZfLVeZvsXmSl5dedIoFVU_wbRhiKP9fMd9bVsFxbz55ME-SjtejZzi9Ym3vceuhfq99ih4KiX86qreEub0DHA_TYC5vx2nCeLk68oEzTgAwbgsY-EJQPt9FGTCGNpEbG0irTTCYugvsMrePUQ0yz_9QYG1GkXSrTv6RBqsYpdTp98uO0IxJ3hf5-KpU9U7sUj3WcD7n7hvnQQr8RGLF57QsLS28TtrtNhaq-N8ctNg1n-EgtyI7p_b7pxjy3vC6hr0ddApRIjd3SNLXK2q0a_Yu8H5uJRTaeFKeV9_WuJgVUkZsAy5TvCU9mfkBhKLzmcneKD3BYJnjluhR5LoEkFwGeDnaycvLvVrH3hylBKrdH6TPcx-7GLc-e5ydJ24yxUpsukpS4NdxrQ28v72aGNIVTTAmGjMnc3xVCFH-DDffBDrA4_JF7h6A7NtOU",
+    location: { type: "Point", coordinates: [-66.334436, -33.278828] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Tucumán y Pje. Chorrillo",
+    category: "mural",
+    description: "Paula Gerónimo",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v4A6TVylflfLQrzfe3Sv_77uVbouEIU-nFkezu2yghL4VRw0KOq5OShz6rkY5Z2eU-Xq8k2-BlSx_IKh8AKaY_xX3SYr0B-vxfLaU-ozf7AsH0bNEgfs3UpDAQ3-0itOpUIZ7H9CqB9LQ0SqqAPoFzJK0cY15UX71Tqwv1FJrzITTEzTp9Fbt3f3pfy6rcRsXuebkrFGUHvd-7hVZfAWp4PGjkczBfew5oIyNflsB8UMjUVcU7PTbrBy7trutZc0XrAFwMZ6V4zYA5Pme7B-y0jpsgySP1zy52Ot7Exm0naRPGSbZ4ewpGa274hB73VkbH0f_RrsiO4Ey8-VF4K-mdfZr7A2b_sid9r1oymH8oU3fQB6vf4_7DbQx6D920WI7NAuwYcPiXYIkL0ef11X0bB7yEEgt731gm-YRr2EBLMnoBsh3K-kbhqDFhSRbAot6GwkmqNWyf84OyrXEG_F6gtr9XrqGQvXpnk-1C5oI-0nWVFHjwfc4rKxMGaU0-zaqYeQOHcTJUlmZhpNfuQRmHovktDC5LcmrHsZS_JLi8DxQDIFqKdcCEZyUH_3uKbO0u9GyqATxTy4xHCo2m6zuEoenI4eNPjFaB4y27Ptx0D50yWzwy63YCIfCivv_dQAUGBJ2gY4IM_-1z9Kla_c9LudaTZQpvFpgERT_cn9Ady6Ps801XuSRfHliFlW8ESl8RBmMMtiZZWUdNdx4i5CnW7mdOojA25JEj4-3ald5nULBeX9chP39_kXh-rW9YfV42JmuYj-iMTQn1UwtB-Uk90nUaXtNjcmWBgihAuMML_tkm8VHBCFE-43DADA_iGClYon1cb9PvkR5zYyz-RjjfjQlchfmb9LqTEjqDJRo4aAuHcDPggtA8kgg",
+    location: { type: "Point", coordinates: [-66.317678, -33.285227] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Club Yapeyu",
+    category: "mural",
+    description: "Martín Poblete Ledesma",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v5nXlNeYMqAsWG38PoodXkBiCO6_NeINwp-Z83_WMKn6eb-0anpZqkRMD6-Ki21jdtBJSQ9YWC82diZHodl_yXAOrwQbihSezp0Wo4lpBf7RrvbWtcnMWiM4vdI0Nd6EIt9E5tqrk-BfgVi7XpwKul24LJN9bRp6hTaUEd6WgNYnu4DGRmw2V4JmfHdUpRB3_eS9fvfithNLQWzJyaUV3t5aZlCHi1fsInhimh3zcOWpD9GqtfY4s4EqM0TgT5rawLhNHg8IbBpdVlbSTSTWHNTULwueWH9LcnRF7UlQncO_9BC3hBiKs4Ub8zZB22jb53TD0a9OEtybpV0WBrBP8IZjksVElbK9hVQIde9RFY2dHkL4Vwfbm-ITvjfvpDBXh9mvlvu21N1PCL81jlmV6EOppV_h6IIv5TxdPa-L2hIQx49AfTAaoQOMi5D30TpW8gJTTyB2uM1TpOhuwhU3UGUQeciQh7gZMUf3WyrB1Wz1BVHoefX2qAg4IlynGVdCE8SJTSP8ke0992jwV11DLElKPQznC5THW6BlnHTlU8SBRMv_DAY9Ojz7Q0ibZUMdkFsgn0e53XzLBj9PqqsIoSBJSgSMuXjbFakS5ICEr3dqXsEapJHLHcdcbw5qPAaVpkT9fhiyIvCjUunL2OJ-WXfDi3peNxAqXWN_SLEqjCFRRCFSW_Atzxk14D5yZrSUaSs3KGakrqY2PV7X1vt5cf9_F5IoI8EiUwBdRsN_ICW2h3a_DhPGscs15XzGGt9TQXB1FiETfjvU1TrvGNUUJXbczuQ5UJATEamdfXjmALBx5XC2kIDLptUrUebVCruR9JZSnlSSI_RuWxsqoNMigzXiU3i-i7p6J1zjKbUJMo-Kc0tcPFqX2tc7G4",
+    location: { type: "Point", coordinates: [-66.317636, -33.292126] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Rawson & Balcarce",
+    category: "mural",
+    description: "Simón Jatip",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v6KakKLjwyyE53RK412q4DJiCQdV4alVV0Y4oQoSzDQ85RT7X6DtfIoifKP0gDloIqXfzAgblcOwYkQTV5ZFtf-Gdy5HcuxBljiWfKLqx5aDmNkZzMzG6DfdjT09Ti-lichSHhKw_aA55QUdfmJERXHamb9kLyXEOkDV-uREwMeFQE_E6-fPDEnaCcOKkaazCcza-hgK2PvLDYpRvxSJCKZ3atzjBRQx4_J8KvwGcBT4o0S3CGvss1L98FahdkPYXv0KXKq0EsEzFzJ4SxZVH5zrXpdud--GXxbHJjBBS_7zjdEesg9zoWfbNGRGueRAKbJWj51vUc-9t6guAehLMQJWSQx0qbdD58Cz-RJi-Exo0elDM4faEOf9niB2Y4TseHUw3raH1e67Bw16AKyTYo9i2-_j1rt5bICc-IVq4mhlOHilvVotfW8XS3ZjHIufylzyIlyMVHjuZohdSS54mEga-Gj74GVHF6vKDshDlDbz_Z4McDm8JPTjmGKt02pvEBiPDQd1jizjtK9lVtpR4glpLJfNWJXmTqgbCHuH-9z-aYObFzeMmpaCE7MCxpVgolvg0Mle3MEu44RfmaMsOqk5XH_xNFKyF9H7CJdXhZa-kBFKTmGo20P5ELvqUIoFZ87ZuVc3cuabz4mBID2NPc_Vcn91ZTiWWWNVkfJSbPNLWfwTgp8B4xnq7391E0DiXFc8H36zOaET6EC2Uf1tjB3BTMypjV7g74l8I65XtuKQUzsQd6CauKtfaK5qMn4pmwYgSTEFFkzX5MQOwHjSxM1HH1HruYM-G0X_OhLe-4iuc27jtgFh4gTo8xj_D70ZhIU5eFgctoPk7q1yFw3CyZnfdfYBqVwNQuM_1sTFowrHAfxHC_reJGA7MU",
+    location: { type: "Point", coordinates: [-66.3176533, -33.2859673] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Barrio CGT, Mz: 158 , C.9",
+    category: "mural",
+    description: "Anabella Del Valle Larese",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v6zRFBqJHze-pSwmYGLxeejlfIAnrktaFZxp2XfwbxSRE2DbIi9LKipJF5jjf14Vr0zr4o6s6nStMZPjV8TrVm9kcTCC4E0agv-aGi5pVQi0kWc0ljQ98Ogyg9SRWeSiMYrF0HvFqZHUxOr0mkIjvCcAnU55_o1bExEl2ZKcAu27cbSfs2GOuVKiztVauxIubNACL_rdUGEwCmy2FSCxyGrejLtiAfIvPkL4ArOACmteN1l5pFEvYTdwtz_Y8FCBWvIDfqmGBZ87NERnu110fwwSL2hNumnn64zVBV9UrggmFpqYpAKszQOGO3C62qxPzu3YuVDMofP8kKoUDcBAULIaqbWpoQCU5WtKzJt406_J7FisPbZyaLLlHBGYx85Ovzvviokxduoqic3-UMSyWoTsJn6x8yYDdMuFW_waS5YBfZ4f8jjvEDETUgMJZL3ge7Ft3rdkSB4JuMd3rs0XnLoegbxK3XIVzYl87IR9CuwXaJVhvjgs_PT_Srglb0j48gyWmCCfdDcHEQiT9liLNryEb_-U32tzpFuPN6XwMXIoVkS_yHG2urJRibOHZ3q7g9SmOwlPaHiRNdyjIVGSz2seyEHDbqONBrBrQflf0AhzG_FIOXHV2P6mdyjtVT2sP0kcmoUw76_ZuE3vlWiKXuwtq5PGZS8kEFHGHCdnJNj_JowRZtxxpvILow7L3jXlgdXxJuEe3BoA7YlOxTiw_rkOpTLILquW9U2o6Nwh1m5RsrZ9iBTqy7Zk0NWpDNYVheJF38Duhz0NkbcjClc3Rfw-dVCacEXD7G1OIMCY3u2nTwKu5YwgZQVlfyGYLtK2mMB-XtVehJ5ta_MgnqvsOO2g1aW3Aje5lrJtCaZD7bfUD_qGgZbBnExJzs",
+    location: { type: "Point", coordinates: [-66.362166, -33.309386] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Bo Vialidad Nac. Mz 160 Dto 146",
+    category: "mural",
+    description: "Leandro Fernández",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v7L-dd-AII_j0h-gEeapB9Hxc7BedM4paJeYkX2F4U3cKtpJ_h3v3XFFnPH4p9zzzZL3Y4jHjFMSIsmKIBPH6I1JVkH8Ye6peK7QbO7YMmYXfGDSjDlAKJnWRFN2wHsMtSC1Nx09OYhowmVBqW7ofJnZNuY3CneIR_YxUwGfjKbx0d219WFwI_UIb0N_u-pJ6R9UzXQv8PsI60cvri3vznjNoJZAQitv3i3CNmCcWvogsbHmR1iFd_eUE3sRGUW8TtA-AQOja71Z4nVoVwVh1C4YvYT-rH1owfSCsgCOqsk90IvPqp1x1zmvFY0guV1KhvTIoaFjsQbgavsbrMXEWpTCDt7C0u1nJK5CZGbjdzYdP-h3JgGn4WhRR4sBSFDTviYqsyvqOLgrtKm8m9TnP_Rvv7YmegfKBlFkd8B1UaMrMI6oZYzSrdmdYuxC_YaYfr7q9V-ynI8xZraXt61D2byvXB_w6y4WCtenYJraH8JifrWyApRm_xT2IDKv_6FOhLEdLTpZwCWmFnoJoDV1MFELQTOL2ruO8XAM8nmo32Iq7PvmZ-Lth3F3JevbxqLMBvVCsAMj6t8k8aats1fRdkOu2RbYl781gNWvbLQhJPU_LLdakvPsHyKhYvNM8Zuk1yFvWBCaYyBxSLFCLaraU_JICn7bKiEjyiOsn_F3PdusNDuwOhAkORIcs0iSa8sXsDjAYIad-ouajUiN4HCgFeAAKOlzC3UPh-tBG5wc12zvY75h8HbZUfrHwBZv5LNtp7rySoAOskvKBCsp0GW1SQqfqhoWj1KiLP6Q_1Fr9GTPBbkfkE6UM2sE8O33OD4Ry5o1oOHN-gt8dZLNUP5qfpQcws7t_EtWG71d1jAptxIjW-BcMW3CkOVzA",
+    location: { type: "Point", coordinates: [-66.3215429, -33.2885264] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Bo Ate III, Mz E Monoblock 32 Dto1",
+    category: "mural",
+    description: "Jonathan Ali Dario Garbero Farias",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v4ochX2hZ_fjERipafvw0a7c13Y_jMjyhAZfVXjXYiuH7owle9nqHagzFtUEhY5ALsbys9DPya4ryh4TyxGy5oCWc7XQZ_vVUyvJ6wdhRvKKb6rMCoLO7IidGJM-lls3JrQ6tsf637TSCo8vA4PArs6jfGeUNQP7T9BDOj1vQnf0Hq4RcV1sIiorXoU330RK3EIMTfvgmgBwq540tpAtSOZLuHTZCO9-setP0LFkY6ypU3zlKtEx1PXSG9lz8g8yQduEI2KrRU5JOcGe0IpH5pbrkRereTzvBsmIZ77KD6P6Fdzbp5qGDX8H5wfx81pbGvRWHR71XZP44enQgLlmOKHfPcrovvNAS6ux86TuxMuq5cAb4Iy9jZBV5B5YTL8MBQ87VUw828J0pXnhej7cJvd7kz8Ot6NbgA0t_iPococMeYa4YW1YVDpvvu7JoAbw7b8gzOEGkS45BA7PeuOdQw7f9oaj1_vPPPlYuqUeuew1677dpQQq6r-mjIrYUcsvQ9GNvb_Y5eXbuctaqaDjKxmZousdevFMz39OgmyRdVoIOX2xF-yh3T9pFINO0hHwXrS9WrvW_vlI-z79MhqttSkSvI1xQZciJoiMfvSRStJdYYbXbmn8RvW4CBVisQPx5SOOaqYtolCGPawTesF5oGnEEBmz6jslN9-pGOZHSqny7CGKNDLARV2eYie6h2LfH8HiRemauSSHJWOen0g9HvGRPOFxiJnEOMBX2N-T3ZT2ZGWNjw8bEAcF5lNGqx1HKRYviX9BoywO1FnV0UmUisoBb6XaKXOS_DLotIKZIguTiKZoIGUrcjAtDa6ffz3op7NgH9tzp4UafP_da-aQxcWh_w5UdoQ_pjT03c_BUgj7fk99C-RC81tKjI",
+    location: { type: "Point", coordinates: [-66.317532, -33.2855963] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Barrio Ate III Mz D Dto 69",
+    category: "mural",
+    description: "Lucio Ricciardulli",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v7ljMnIv-o9BbLC8nCdShMetK9eIQZyEchRc62pwTdQ1jk7quLoEMPzyGDhGA-DCduMRr1MjOBLa402FoZJYXI5lxuiZ__lLYZ8GKREM-NzZexie4-9HZdxSeDnYW3g_h77Fe5fYvkiUaW_IiBEGkNG-DuxHJlHaGxrhuHs4rAuF8gpLeERkm3iXcoE9796QHuPbxxrG9vD5LCeZiTygckcNnJ7fDc7KmFfuSRBwshnpcCYmZ8hH0V_xJ9YHPy4xAd2A612H8TMQzpKulvZN4An7lOiLyLjew-OR058GVEDjCa_I0R25xbUWVoG2zCCM6e_jYquWDrZMdLvHm1oAcW9mlMdhBMq8im-DIc4NWni0tMy6jXh-atmxhX5W0v35AKnmDX7p7F1NmeuBWWTERLZxUXzWPcV8ajvf4F4U4Z6Y-6JRCyBAiRP9xYm99ROuEEXytPVbn6dCd7NYrbyc_1rQwvuDPDM8jYLPs8Pg9S66SAvX1fGX_2UVaRcreddFN2nUM0_51Zs6WcNtKNTS56tqoNtouv7umfRGJ8UR3FJQd56y7q3SHL-O48_5j8CfXx-hcS4MeCDXg81gNHwKrGScuPjXRHZjVNxPbpJtIQyAxuXAQEkwkIdMZVzKkQBa5n9DGmg8Cnghm0H7lLn6z5zpUmMQNpW-EeL_Ttl8rDtHD6SVYBmD66KHbPVgqPR2iwF4zLtl7HflWSt5A1qVhlIA9VKz71mPTxckv4yvkJfG4M03N1RnqE8XZoT57jVB4vcRWHcRmvG-nUdvXRrjFU-R1Y-TxMqhWfPWHUu1q2XsXnuwphsxhJEeW81Ph1tZYhURq3II2o_zKdp_R4g-1QCOzYhbP6CDoyp2lJB5H_4v8rFZqUJQ74EPv4",
+    location: { type: "Point", coordinates: [-66.3177913, -33.2856453] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Barrio Vialidad Nacional, Mz 160 Dto 146",
+    category: "mural",
+    description: "Ignacio Stezina",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v4RRPqc2wb5nGsRShko7_Mx91VmM72L8WXWjtBrWge8eNC5dHweKd-9ibRKCGK26GdrMKs-hH3yVwLxeqIhb_eHGVs8z7PCT9SGbkoT4Mq2r_G-IY3CNwEW__BA26grxM8XZH6Wy4wcKrLg_IlEHQRNpacQ2nSD1Irj8AgxMoZbJYy-FW0-IldkZZwIcGP-TiGCnUPiU1J3Qb8mCt6kuOk44CebTow7NHChIEPGgsQnbJAbzpIwKtPAImxS_Yx4ClaebEIL7E3bcZrzHMhuNU5zxWBjPW6DE84GLTuJ6EoFB3mUKuCA70RDGDkfz1ysBnxHFua_m9vtsmDRlHBX1CvUw051pV0xLIJzwZ6UJt-lIKpuLWeIoIC2I-OyN14XRP7kKXlgaa9oopIvioaxDrfZN1hO0PqdgdpDBvPltvbP7Qh8rwm1fC5ZfQbF3MNTth_Ik6XgR0axMwDBTqYWWZgjQqca7MNbNvQzr4m4mYBvNQ5m0qW69lbfrX-ZbfBY-_F_NRW3Uu5-4uUohiIBRzhqreebe0BARQWWt_L7IceLRk2BzxJiP3i1dm2PnxoA8ipsEd06AStqmTEUqjCJRUiCC4qHhCB77Z2tXacxtaFkKKve5eZDv9sd0BA3Bo3HcONakL85ECqZWrHKRj3PJqImf_9WWI7hgjPs2RZ86LrvBtV5kaQ88U9uhDfqC0mTFOG3cfox0-wdW217tOH1LJDPARIs2CiywoXDHtMUc2J5jvJUiRdljSvzBgkTE1BtmpF5bAXGtwHYq1VOep9UPzaFn6u0x03YuM7fpFDvsfARuEnK__Q6FnKu7ke-tbBlRpiPVByYs9uhERGfjMg9goJVDvt30p-Uc5cvkHiOcowpPxBVVk7dI21TIA",
+    location: { type: "Point", coordinates: [-66.3207199, -33.2886782] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Bo Viviendas Productivas Mz 76 C8",
+    category: "mural",
+    description: "1 AGUSTÍN SCALZO - 2 ADRIEL GÓMEZ Agustín Scalzo",
+    author: "Agustín Scalzo",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v4nvUrZz4HOno-4-Le4mBw7YrmNNg7VDsn7V1MIZP5z1NUjlzU-2SBI98xlxQs6Fe5_36Kek9CdcNn2QbNMb7vV0hfF-Z1FNEaT1SJOTfX0XQMVj7rpF7sKSbgOIt1WGHXYpUXoxX03PhdO15jgEB-jfSgeASs2C3WMuxOjnK3_j_jodT38DfYOVQ8YdFeiSSA3vlVsCxKU4Xm76Ktn3vH-I3bdmdgvQ4SDk0bO7PB62trxsi9M0KYbh-7pIU4-xNJvVtSH_J6aN2Cx0e75ZLSNjjyg_XM18GIjzFPR-EDAsHORwBmXh07oG9UKfOTAArD4-kYv3MYl6cieoN3RcSECarFkI_f4gbXB4oyUWWzd2sbuoG6oQm5wmHtytNBXzjN0D5OxAYgeqY12Pfc5Cst8_SZUw-wWKfiU5acqOp1Nc9-YPem3JeCKzy06KMSkZ1le76OdxT6UFx5KexoDpEHrO4LcSi_mSdmiG2PhAHy93bw_5sfclpUo7XAKSN61BiYx2Qj6CSXuNi88ZBWuZ1G5loDl6uJ4o26ewZZ7QziRr1uTpQchNLEm18EfeYtuXGICCsIqDy3GQgw_JqevWuTr4beG6grA3YSsu0bG8RHT42ACAsho3oxZuuFuls8WCVEOR11mT13gnwxC-gvB98FGT7MtdmUcXkGoJ1fDqCqs_eqKMt4NbODLmRuTh4iXhhT3toh3EHGstcd5q8U9V2Rp6ONhwbx7QIOj0_d_Av8Nw8TC2WA8j5MB0-X0Z_ffKmNixAwmoJCh_wn5r1XJl5KO-3KE9n7iZLRSGGjgBrKT61D_EpvHohNA0Rowb9LpadMiWPTlY8R_fPXIn3xY73gVd5z7p2ZInZL68nqg7Mgl1imHjIvsSdUEtIo",
+    location: { type: "Point", coordinates: [-66.345235, -33.2683798] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "El Cedròn y Juan Pekol",
+    category: "mural",
+    description: "Cristian Varaz Guaraz",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v51pyMTc68xS5hojdMp9u-W3I4R_VloX3GmO6Ew6osC0YsPEAPGG7hSOhnHWBuvaSgyIReaoj06w-HvN258QIuqEeejjlbjXy3y_IY6EmsOYt9gN7-eDhl-UU4MTb23WCl6Pe6p157MWWqLuK_aoEtPM78ij6fPLsEzxe9hTAbN4CpmcrePuheF2eoqtPVM38erExjOsn-rO-26MZMb4ioh44bjw2w3-OImbq4pM0snEwkWIzhZY7xOrdMfFkyKJG9s9S6DvGobbnWhb5ZCVTFLNlcBOhw9DO_qOzzdGCpugKoORRAwrvglm_Kkl6xw9NQ_a-chDLA9qru15MNVNiHIOE66pZSFlqVTo5TfVf_1GEF5SUQ4GiYKo8d3Gv6O2YRSaRQqwtkCkEyQ3ggqPF_-Lkw4xBBO5RcKnO9O1H7gWWkh7LFy9z4wZkWDYiNlqoPcVpFjC109rOrFD9S_Qez2S4Ell12_omNIOmLpo0RKKXQPc59EVcjzaxIRwrSxmfCkD1LuOQgFS9ihuxYloZIQfOkqjioPiSakcIBGx3rQNfFlQ2lpflFS6QMszGWYA8df29ceUih2wcbxmxTTcxUNB5EIor_WDQ_vb8ROYpUmyQJNu7qtNG6kmf9xaSDeYLWE1UIVA5zjCKGMCCPcgqr9J9oEndMJxKh-4Mbpzd-jd9dFaJ4MbCakJGBiUGgaacmPFiAtRl0RkkIt1DHONhjm5DxyNkM5txT1d0ZgXnToBZBO_OhJiumXdC21N9aJBY3O4UjBBwQicKCIGY7_ZlDiYj1ToVErETfCLSikZ4WpS7cCcpevFsrAY71tLrAO8mNeWc3TPXrnZQ7a9qKo6ux-FWwqBFJ0iEzA-H32Ba36jL2F5yDhJeMUug",
+    location: { type: "Point", coordinates: [-66.303433, -33.277018] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Los Castaños y Ministro Juan Cruz Ponce",
+    category: "mural",
+    description: "Bardo",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v6YO-HPfSmTJM3VZK-sR3zbQxHVjjtSz-Zs1vqz0MJsf5cGGC51bpKsOYth2Zp0mzZ9yO30qWTYDGSBfGRiFXOdNGFNR8QovT7Ut9ei-A1GjQnwSjkcw2MzcO_dWnuaVFnhWeYAqFehLnpJ3DVms942IMGwLRmg46Jvl6KDY8SdGcyQuiOh2Lq9eAKRGvd6iq79JK7CXzfhc9hFiz0lypD0_xrZoUYSlQ9NkeuMRw5uD8MlZUmYBDQTLrB-PSGKdwjgqSzWDW1_CYZFg0ExeHD_zlgDgOOvGsSMLPTCLbPLTv59zD3s_-2obG0QPocrQayZ_1iHXzPPtp_n9TaFUaVu83axe6Gr8yPyyEsTe6NgNA7gx2b0H6byhGOxd1djdoBfmPyOEAab0tx2Fpq2kf2haQ-BWivfqhtFa0lV-LUnMm6jYiCh6NjKioUDa2f8SvPlw_p_RqANSnmD47ERKWjo8zdWmPF5ZQRpQtlbWNL7vkKZfkt8pgaMiGH3Tykdk1nfub8r1uuSB-wd2AbLm7kMNotuKXsj42xfdHYlXIEM02xSfKh86M42phH6q_8Pz8oeb7H3S_snAXVIg_uc4wSBQjCmTA5W03EpR5f1DjwMI0TgU2v3x3D6Z_JDs3RVAUaD2Ar0KqFKg88F-knEnlUlfLKb1BywB_I4yjWc9OVUUiZTxsKzxkdFBXto5Ziwg9fGi3gKxIwJJtsdrkpASzJZVqIYt0GVNlJqoeD2scbwaqRp1gKMzFGojb930e7MJLJ1aTphx4DWpuX5K481O_-TZcH9fmOOJwr0a5ATrPnppYFRZyrU-08PlWRRRrk9XVRRTd8z5-RnHKmQHvOlFV1Nuwblwr6IBbcv2mxmAashJ5n5pLFPeVP4wIU",
+    location: { type: "Point", coordinates: [-66.302484, -33.270888] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Mendoza y Aristobulo del Valle",
+    category: "mural",
+    description: "Walter Pato",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v5DrpF1n8cvrawP4pA0QcqPxAzOae4ZOh3Rdk9p6nOt_bYogJHRI0KoctFyJxCqW5wzWHT_eNWYnaFNlXPM1H71LGyRQkXW-JfwC-TjdPhxrJSuF7HeOjDFlU3so78wi3DSPQ2OR4tJDH9NZPgtu1W4d0_WXi5jj-c7KP7c1P6X3TaKLDajVU7IhZsHuzZdOgl7c0nMYgNCXrJXIk7qGUnTYgePsVLCjeX-fs688HVpwTurMKpYIT_PeqbxTVnWdPoE115LScr9fK6GYZNNj9aLktcTQGNpTa32gMCj2ZmxLvPVnaBUrEUs2o-8KMV_M5Qp2__uROAwNsMwmFxoofoogby_ceObd8R_u7N1y2JXN6efd08V0VHX9iRJjZuycZju_TdavBft89aLHOjhzLZCHnZUkUD5RdJ0OdUpIxI8RxYvBThOb7Q2Nfi2EeBqpSxbrhC2bIBcfg_uWKEjKno_W1joiu_UCSUligcwYOYpCBWzSs1m_iSPL-NiEKWSOPPTyGjvmY5t2wAqFuadzWMzfjTTIiUvLW71rV6GynjBvWGpoZ1hwFkHM1jTnglm-lp59wOQWQNN8i5VBdG8aar4drh_9pfuZaQcde7HROnc5dfBWht5yyD8vHsLhVd8d0OBLrVKG3caa9KUJl9e-3akpX0-Pn6P66LH2CQpkESK9BauhjBO7y307z0UONhzyiMx4u5iED6L0UFbG2mXEuxH3ZhpmomwW4SfBQ-fFdXVKckNp6Yli__EhwQdLkHEqcDM4K-vpXtEsEhB5Fh0nY0Fw7YKYOzEfs7BVW90ZzhK2OA42YkAE5IfdpAbpYdk9SiuZoBK4cl5cmGyiYVYLP-Ij3_uG_mAw5FYCovnsmaS9R1JmunblOkualw",
+    location: { type: "Point", coordinates: [-66.3537377, -33.2889445] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Calle Estancia Grande",
+    category: "mural",
+    description: "Alan Myers",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v5ncNh8AhqNBXrgPZWCnIUtGqtnn4ZxEn-4VqZvgDyC1zGYuEHAyAz4q8jlvv3BYv1vN6eK6QKTrVldqsvKRMosJ4TYdYWLkFbfa5ULxWbTAZ9Ogzghe4COgr8kYcH_6AVErz0YtLo5Ik3mns40W4Q5rh30g1-FtrnOP-r-pxcATLLtUxB66m9yXgnLFGPU2fMVFSTjYEqNBjC1iPNj4yqgsN5DeeFbeFydOsUnuoUnfLmE3lsIY5HDMyNq4i0uH0AhKkFBrM0-ZQ2CUhq2BgJ4arbH8B87ugw29B59GkarlDNVZrW0UPxwCfffBrnMgCKhBzSxlqsKWEJhkF5ORJHZfPfUmfKv3CRRjOx3NmMlVbiMnAX4k-5kZ9WziLDxg_L-SwGX_wrRfqAgcWVdSrvfWVKlJJv7R0TwCLYRV1yC6XPSMJCycuRX2iDDQfpm1zYtg_E2rQVXf7zcKsxWTTdyj-YAjq4qSiE3WGxzgP6tj4BM0q90HhKMnR97I6LaXk_Fx6RszkQgdQ7x-_0qHXvBVjhOEWbBRWk5SkvOgDSFJwswmA01kByumuGZ7rI1andQwCNnhAlaE0rOAhv2VnehUzbE2CPAnaT6l3JUwPpUEICfTiT-7hlH_GiSrNH9fhi98t_6Vg58kF3fmcJDaqg_YrjA80E086AkWHe-eITHVjOUg6NU1-IjXxQflQB1B2P31U6wOD72-Z2VxgvBCSN_IW0CBVSEtRPhneMRoU2wZ5sAv2EIlUNEnuwDmNnWcaRzBHffq4Lb_BWS5-pIU2_03EXH1kNgnidQg12tnwzgH_mAJh6bE8PMe5dA-usH618-kSQ6tIe6uCN4QIStpSOyVu3LW6-U7eOnb-YJ29ILD1N9zi6eT2Qzfg",
+    location: { type: "Point", coordinates: [-66.3174228, -33.2829395] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Ministro Juan Cruz Ponce y Einstein",
+    category: "mural",
+    description: "Federico Gil Kiki",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v7RFCUsz813C8uuQZ6mCGyVJfcTa8L8WfJrRouHx59akQQEGicPhnac5kz6QUfPHQcnfq3f1b_0v4xxO8_RUuFVGuOg0uostq1JEbEdHg4G0_4TMgVqffXA6u2ySK0N43Dh78zaYLfKQWGjhx89c8jOru6xC88uY43bdIgF06noEXXQXxzRY5DuW6LVeMeT1ZE8yi4jA3QaFuJJFFcLTlxC0LmaEgOUbRfRzL-P30a8jFy2H-v2f2bXY7GkY81AS2LAFDPFREPh1QUK4ts6QsJBu5RfT5DyUHXfkR41XXTz2x8DVfcsHFhv5-YnSPbxf3RTLpEBjUzP1KSSgGYsSW9KfG90aKDHjNVFWT1RWsSx5OO1KenMwzZzpB8pB0RiqXtSrTfSiQ_i8xHZekfEK10vln8_aNvTjJsWGT9e0XndvT_arEf-UBu7Fim_Go7FTN3JKy289kcK2Ppk3iNWEkJztKnU0oOlf57D-aXtkJ-mbLSFvcPxvkzEcLpZjYD_MTlIFmGoSdv8uWFN9CscTHm1272hVd8DpjLe03PIpA9htryKngjhMSj7TLp2Pzv_Xdkf57SLfER9aWhWaMKrYYmf2biDxu7shwgWiHkKBUlXcCJLX_I0vAzcbhe4MhmJd9720mUrXbavo5ARghoCZIw0C5pnw4HNydeDGv4SIpPDG8r2TJb21GAhIpMarclbRBTGHy7XHaScKDDfHt8-HQLSW3pem3UIVFsW9OZufymrQ16qfkLJ9P6dKWRapOWxXK_BQJa0EDJuGTtof82AVy0emiFHT-k-hgo7b_3A2lfUkcQFo2gG5dOtdbMdKqXe5LDFGyfJXzOTeRVH-9U626G7F_ByQxJ2vQ-4pzej8zz_H6X1YUmnIZzFp2Q",
+    location: { type: "Point", coordinates: [-66.298977, -33.268026] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Los Olmos y Juan Pekol",
+    category: "mural",
+    description: "Mario Resamano",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v7AS97VswUthHFUCyhat-3_sVun_IZyVPQn_QvKQZWgq6HRUsHQTJMUFDBwlhGFwiAYSHv4ieCVxMznnGTjW5lMVuf_nguMXuY8qMPfK2k4xSSbgjNTPSGXsIzmCUuNwK36i3GQZSpJxfM0QxWobIqaXVUNz92vFJ36CvVNwfrhCNPSDBCOUDX8buQ0NMq6nE9xBh_RmxWACzSfteZBGlQT1MZP-8zfz73Bxc8DnpTOBiD0uIuzcpiL405FwvuLaVMXXzfIv6vgEBfatlmIiVx9zLRvsmWOTFzvVYUFrUJ-e6rIyMr_9GR8UhlrXreVLU777DcrObAlBcYsBoD2byAGRec9b5xOPMKiiOQX3wCTMLzA1rKPHJiMWhIT33TpWViFEo8zNdCs0jqJ81hcK1ztYXkOx6z3uFnI3GpRQcYOfBI3nczpaS_AbRkffQk9WXL4UmRkX5b4Yjn5DUHT0XHE62N5nBOXpA1EtkT2nkT04Rzyp5BSbuj0LgNC-VmI_yrCrmFDZ9SnRf300htYfXCWM_KVu3x5Kg0Bepfhakz5TW9-i_DWkrJf_X7n8zJckgdL73RQZNcRxSOiMPahYZYjF9Izd0-qJXFvPDQ8c1ydxsUJFokNz-UsWJeEPNouLsiak49NsNhwsVpF5yAkZtJIyuK5ISY5UHeG5EfohQ-MF-uXNcf-pFog2kuL-17z_Tw7X3o5ZXSVP6W9_GfjN_TXFPTIPhH7IN9hZf2Ifh4wDkmbsab3Yh6Ou22AJWYzpbGMLz4QgFuYB-_q0TT4J68TAKR61sD7AJQtdekt2hnlP0xHx6DiZllj4Y018Jb_vZYcTVQlSy97YMFHFnDDLSoLj7-fVHOoTNJL0lCU1bue9bWE7w6H9A0creU",
+    location: { type: "Point", coordinates: [-66.302635, -33.278702] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Antartida Argentina y V. Dupuy",
+    category: "mural",
+    description: "- Jk Nives",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v5v36mAonMPRt_oyUOtwFHv3T9sFq9sA8kBkqeNBwaArk2r3RJSXA0AeVIN1sv0kkVjTcRDgPrZ-vSNgRXJQG3tTHIqa87BKjEABnTsd8fRf5m3HbeBBw3e6xfwHkb0f3NwcSRRQg7NB2wkprK9xEJLTusV5M-8hUQQfXr7Moho-YEAyWfYG3Y7EXDJ01yHNyUlbbrdsxH9AtH0E6DrT30JMgOoqw-iHlhNPXP3YfGApt4sI14a7JhziR6lZkZaM59nKm5MREUShWbveyqPwwEZq2w4VLDuc3ThHxfXOvBpDYrmmcIIKcir1b65N8toycGuBVBkzG2mXEi25yp3g0XYrVlDoXBJ5h-JWaSZLlopSbPBdTW9IC0H_MLBg3UmrnQ4AnBcjo1aqGKkJKN9AoDYZn_zctmA5uAW_Pr6Uu_weRkMwnxG-dL2Jyc5Al0a8AIpRsSZL9YSME3xWJ1nfXns5UlHscPuFXaXfmmuuIl9a6waqy2NA7ABTB5H7akIaq-J_m4GsfoVHBoU7htPgl_Fgw_HuBQvomTuavt1AL_T2buRVW9upqM393vjFDY5r8Fi3JtxlNpWWVeeLEJFhA3oD7W8fUa8hRzwE8HTLHLnlMN1wXJxa0j3Qj_oWjf79I-2PdoTjGnc4J4iS5Cw-Zm4cqVtEOasz2Xz4-D6yGT3Zq7K1kCIY2pzxcu_LqO6JOgGdEUUZyMbbjTI6u1moN5SXsRsvDeAfm1CT4wDYUUCDuQjl5ZlVaDJlgTi8dnm6RzppiFNc8UDe5fsWzsqb5MBUxzVRhIIHp7DecmXSCxH4WCZIIh1iOSV6cXaqPMXYMD2IoYWmnDhg0nm4N95HnUPx2bo0yCoh_lfx5LAgI7bxcyWfXNReLY0YQ",
+    location: { type: "Point", coordinates: [-66.352613, -33.303863] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "El Cedròn y Juan Pekol",
+    category: "mural",
+    description: "Gian Lucca Repetti",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v5htOIgYHIMT6BaFMQ4an3DUuXlQWcrJdcou6TV-dTHviT7WQd_eoa3K-WCVlk5QlXTaDPxXKahZBv543bMOnv87TCrcaLxlE1neLH4lAp4KsR_AeFL3IqJ811EIdcR49J8iAPQLEbgPsGXaza4Bk8QkNZiIRy_3DSsKqfl-Alp2tt4qqXyGK1AYbrdc6I79gmHWt8yhKZJbPVvjyO69i0g0yhHg8OMmaDxhmrTSY1RuFn1DaIlUbwZbUWXWiUWbYnM017TifA6XjUDLUFDn6A4m89CSuFilHsQM-R0sNFh7ATMZuitTUg-yE2dcbfJ1_9RPh_P8V6alMjbGpNkQJl9GVnO2kmmJQYzUuglJU-M5TBNBGspzGTNRiyLO5jAyLuY416FhvAmrRWIjRMileLrgF5pOX9g3FvLJAEt7_20mD1xkmoSIuBoZgZRorvvlAgMMRf0ZSoMaiEMVMDPckPYU912ONd-tABqnG_oAHUSOCQ1V7hQ-Ph7mvihFp5hb1o2d4Oq1k_hFDga9z2Lna7iS1ZSiwLv0qzL0urBLobLqbwaayca8srw2H4MoDE1K8X5_s0hbyke7iUAeAAz2XWmvtaizf9xXS0tt4dYjciBXv8LkDlAwLD34woDk-K2vspogGTZMuti0Loz_d2hPm0Rkq6bjPOXtDZ7fYq7nAlimzsYaRWchOTvPSU-vPCoNtM_VpmQm560ZixNbFzI9PHw35wuz66v73_ekG4z3LXVwIsZVvfwb3zGhwjGzBkOoiYnt0gPIynaJ5nNTfPFZXUXPvNaOQ_7VxCwvbmC-6RSJePEH2T9s4POEyhFqrujEvb4kjFRFkvsqN-fxZtVyeBWEKU-EqtkWxaAWgB01JRZ4Q9xlqHPHAWZYg",
+    location: { type: "Point", coordinates: [-66.3041222, -33.277121] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Cerro Tomolasta y Los Chañares",
+    category: "mural",
+    description: "Santiago Mansilla",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR4JFc8haAyGXMhnRdL7FBBusQ8lsXpyi-RVsSx8fHex2DZCPQGOB20t_0_bBf2u_kkmGjyXEAmPP1ACuJjh-rL38EZXgX1pvkbJ-nEtGz6Bc7HMDQgsZPfrr5OhjEpSRkDmr8ZrbtAyaW5VpJh77tPeXCfKs9oH4QFm1nsleKjOxemRBsNCP02oXo8JmZrf0WWjFTnqmef_hFhGjiGDiAMSn6Xm9TnSlqwtU3ZdzI2J0O-4GUl6wzwTFIXreA?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3064564, -33.2846391] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Tucumán y Pje El Chorrillo",
+    category: "mural",
+    description: "Guadalupe Araceli Valdiviezo",
+    author: "",
+        imagePath: "https://lh3.googleusercontent.com/umsh/AN6v0v4TTnPmOXp2oDMEV60tH0ndxoeF4rdYeAzQZSLdX0O47FD3tcBtfzSjtDS_gD8tPBXqXpRLksyGcEdRZ4WLA-Y4IO-I4Ov7rrDiU0w9tcPp-nbY_sMrJ14XefeEriHU49g02_5EOhqBWBfwi-6O9i_GsMROp3yRr2CUov_o-YhdTPuD75pKD4au5_kY6vdkdRKXsAMRkgAxlygcwhGd4AL3LDnNeqmUswZqPK5NS2TFTow4qWmDbnAF2lS-RXOsaC5024kF98beXakomzw4rjn8rfq2nyOtLxtZZ5xqtEIIHvTiCEAGOZ974JxOhQouDTwf9civ1gZiQwbhMCKr_OK9wX5qFpzqj2hHKma4_EiM3YXMpU4FGDgQmNdKCTwhZmE_wW-Y6iRBidNoWvKbMuFP-LcpEJQpHPVYhbVHLCz4xdWdLA0fxmYw_W4lUpiCex_qjB0y0B46Pa8QByob4mYpZl7gt2-iuHzdMp1-GdHltTTQ8aAUtMFvKDdlV6WxcpiP3LdAbuWyUFdmup0Mb6cMlPE5xu1bdjwZ-fD1ZL6tLBxVSFmUlziSLo6JDwah6Ur6Ce7mPOgK1bCTyCtfsuBtUHVSUaecQIQu3z__7Nhzfz_AzNMtY_QeyTR1Q2zNY8KyOsHCd9loFYCnt-EI6WO4HIB8Knv4BpkmtGB4k42Fqgyjq62MnkHLOV7We1t5-MhEliZvHJ_ubHhqtyLaBrSb1oUte295TNrkiPCCNuqFiIR68sTZCSgHgzBsIcMt4a_dcc1aITT7KYghsz5084PWfzGi6UT_bpPXtEL9vKx19zFvEIi2S43kXv48pMHjEHcXECDOQVEfXmBv7P0PXXzdj8KAlbxUTmYmNnwO2ICJPeab36fsabGKkG4",
+    location: { type: "Point", coordinates: [-66.3355992, -33.2788642] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Escuela N°4 Juan Tulio Zavala",
+    category: "mural",
+    description: "- Angel taboada",
+    author: "",
+        imagePath: null,
+    location: { type: "Point", coordinates: [-66.308688, -33.320562] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Ascasubi Y Gerbasio Escudero",
+    category: "mural",
+    description: "Daniel Boggio",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR5zDglC4icJ8j1xFYYmiLTSWZlM_6o5epNCdAPSktimY590xm0CzTikl-suwbBARLKjP1oVe7iwOYtrx8Ig6dedrTgmfqSBzDZc5In94LUK8QpgvB9F0c2qWGU46jfGZ6WX0MopG9k8Dc9zas1vTVmH08sD3V2IrUjk3w2MNs7tJstv5ssMiXf3LhnCCYJofHua6zoIp8ilTepYT2iqI3JiBXseNb8ic4ig6Envhhr9v8trE9zJ4z35hsA2Rw?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3180591, -33.3187556] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Punto 33",
+    category: "mural",
+    description: "",
+    author: "",
+        imagePath: null,
+    location: { type: "Point", coordinates: [-66.3238098, -33.2868487] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Barrio San Martín",
+    category: "mural",
+    description: "Cristian Lara, Beatriz Sosa y equipo del PINTA SAN LUIS",
+    author: "",
+        imagePath: null,
+    location: { type: "Point", coordinates: [-66.3565386, -33.3065889] },
+    owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
+  },
+  {
+    title: "Viviendas Productivas",
+    category: "mural",
+    description: "Chavez Silvia Viviana",
+    author: "",
+        imagePath: "https://mymaps.usercontent.google.com/hostedimage/m/*/3AAjQbR71dceL21QZngSSLIR8LuQzsOntG-0YGh8lTehyNAK2jpy0yhB1znurfJutSKv8Rt87XaJTfUGNouallT_Fbq0lRFhNGGWyDHnjcFo3dZuBbQjOkH5wM-aicDM1kx9xclAFevnOsL3Jqd4TF_fiKiJ7mNmJjQK0GpywWgMeEFGK5OEVykZSHyZt6XRmMYAVqmBAeQGaPVulX_Iegx7f6TT73znhXgybS4MiscNYULJ5Odhf6cnLKMUx60YQRw?authuser=0&fife=s16383",
+    location: { type: "Point", coordinates: [-66.3451332, -33.2673033] },
     owner: new mongoose.Types.ObjectId("65a1b2c3d4e5f67890123456")
   }
 ];
+
+const ADMIN_EMAIL = 'admin@test.com';
+const ADMIN_USERNAME = 'admin';
+const ADMIN_PASSWORD = 'admin8888';
 
 async function seed() {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
     console.log('Connected to MongoDB');
 
-    const result = await Marker.insertMany(markers);
-    console.log(`Inserted ${result.length} markers successfully`);
+    // Create or find admin user
+    let adminUser = await User.findOne({ email: ADMIN_EMAIL });
+    if (!adminUser) {
+      const hashedPassword = await bcrypt.hash(ADMIN_PASSWORD, 12);
+      adminUser = await User.create({
+        username: ADMIN_USERNAME,
+        email: ADMIN_EMAIL,
+        password: hashedPassword,
+      });
+      console.log(`Admin user created: ${ADMIN_EMAIL}`);
+    } else {
+      console.log(`Admin user already exists: ${ADMIN_EMAIL}`);
+    }
+
+    // Assign admin user as owner for all markers
+    const markersWithOwner = markers.map(m => ({
+      ...m,
+      owner: adminUser._id,
+    }));
+
+    // Clear existing markers owned by this admin (optional: avoid duplicates on re-run)
+    await Marker.deleteMany({ owner: adminUser._id });
+    console.log('Cleared previous admin markers');
+
+    const result = await Marker.insertMany(markersWithOwner);
+    console.log(`Inserted ${result.length} markers owned by ${ADMIN_EMAIL}`);
 
     await mongoose.disconnect();
     console.log('Done');

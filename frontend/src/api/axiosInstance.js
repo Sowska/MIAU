@@ -27,7 +27,7 @@ axiosInstance.interceptors.response.use(
       // Only show toast if user was previously authenticated
       if (authStore.token) {
         authStore.logout();
-        useToastStore.getState().addToast('warning', 'Session expired. Please log in again.');
+        useToastStore.getState().addToast('warning', 'Sesión expirada. Iniciá sesión nuevamente.');
       }
     }
     return Promise.reject(error);

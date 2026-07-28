@@ -2,6 +2,7 @@ import { useRef, useCallback } from 'react';
 import {
   MapContainer as LeafletMapContainer,
   TileLayer,
+  ZoomControl,
   useMapEvents,
 } from 'react-leaflet';
 import L from 'leaflet';
@@ -152,7 +153,7 @@ export default function MapContainer({
         style={{ height: '100%', width: '100%' }}
         preferCanvas={preferCanvas}
         ref={handleMapRef}
-        zoomControl={true}
+        zoomControl={false}
         attributionControl={true}
       >
         {/* Base tile layer */}
@@ -168,6 +169,9 @@ export default function MapContainer({
           onMoveEnd={onMoveEnd}
           onZoomEnd={onZoomEnd}
         />
+
+        {/* Zoom control — bottom right to avoid search bar overlap on mobile */}
+        <ZoomControl position="bottomleft" />
 
         {/* Children: MarkerLayer, custom layers, overlays */}
         {children}
