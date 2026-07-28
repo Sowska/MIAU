@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
+import { Joyride, STATUS } from 'react-joyride';
 import useAuthStore from '../store/authStore';
 import useFilterStore from '../store/filterStore';
 import useToastStore from '../store/toastStore';
@@ -122,6 +123,45 @@ export default function HomeView() {
   const [searchQuery, setSearchQuery] = useState('');
   const [searchSuggestions, setSearchSuggestions] = useState([]);
   const longPressTimerRef = useRef(null);
+
+  // ── Tour / Walkthrough ────────────────────────────────────────────────────
+  const [runTour, setRunTour] = useState(false);
+
+  const tourSteps = [
+    {
+      target: '[data-tour="map-area"]',
+      content: 'Welcome to MIAU! This is your interactive urban art map. You can explore murals, graffiti, and sculptures around the city.',
+      placement: 'center',
+      disableBeacon: true,
+    },
+    {
+      target: '[data-tour="search-bar"]',
+      content: 'Use the search bar to find artworks by title, artist name, or category.',
+      placement: 'bottom',
+    },
+    {
+      target: '[data-tour="filter-panel"]',
+      content: 'Filter markers by category (mural, graffiti, sculpture), artist, or date range.',
+      placement: 'right',
+    },
+    {
+      target: '[data-tour="legend"]',
+      content: 'The legend shows the color coding for each art category and how many are currently visible.',
+      placement: 'top',
+    },
+    {
+      target: '[data-tour="create-marker"]',
+      content: 'Tap here or click anywhere on the map to add a new artwork marker. You can upload a photo and add details!',
+      placement: 'left',
+    },
+  ];
+
+  function handleTourCallback(data) {
+    const { status } = data;
+    if ([STATUS.FINISHED, STATUS.SKIPPED].includes(status)) {
+      setRunTour(false);
+    }
+  }
 
   // ── Data Fetching ─────────────────────────────────────────────────────────
 
@@ -338,7 +378,7 @@ export default function HomeView() {
   // ── Render ────────────────────────────────────────────────────────────────
 
   return (
-    <div className="relative w-full h-[calc(100vh-56px)] overflow-hidden">
+    <div data-tour="map-area" className="relative w-full h-[calc(100vh-56px)] overflow-hidden">
       {/* ═══ MAP (always the workspace) ═══ */}
       <MapContainer
         mapRef={mapRef}
@@ -410,7 +450,7 @@ export default function HomeView() {
       {/* ═══ FLOATING UI LAYER ═══ */}
 
       {/* Search Bar — top center */}
-      <div className="absolute top-4 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-full sm:max-w-md z-[400]">
+      <div data-tour="search-bar" className="absolute top-4 left-4 right-4 sm:left-1/2 sm:-translate-x-1/2 sm:right-auto sm:w-full sm:max-w-md z-[400]">
         <SearchBar
           value={searchQuery}
           onChange={handleSearchChange}
@@ -422,7 +462,7 @@ export default function HomeView() {
       </div>
 
       {/* Filter Panel — left side (desktop), hidden on mobile by default */}
-      <div className="hidden sm:block absolute top-20 left-4 z-[400]">
+      <div data-tour="filter-panel" className="hidden sm:block absolute top-20 left-4 z-[400]">
         <FilterPanel
           categories={CATEGORIES}
           selectedCategories={categories}
@@ -440,13 +480,13 @@ export default function HomeView() {
       </div>
 
       {/* Legend — bottom left */}
-      <div className="absolute bottom-6 left-4 z-[400]">
+      <div data-tour="legend" className="absolute bottom-6 left-4 z-[400]">
         <Legend items={legendItems} title="Categories" />
       </div>
 
       {/* Floating Action Button — bottom right (create marker) */}
       {token && user && (
-        <div className="absolute bottom-6 right-4 z-[400]">
+        <div data-tour="create-marker" className="absolute bottom-6 right-4 z-[400]">
           <FloatingActionButton
             label="Add new marker"
             variant="primary"
@@ -585,6 +625,76 @@ export default function HomeView() {
         }}
         error={formError}
       />
+
+      {/* Guided Tour (react-joyride) — only for authenticated users */}
+      {token && user && (
+        <Joyride
+          steps={tourSteps}
+          run={runTour}
+          continuous
+          showSkipButton
+          showProgress
+          callback={handleTourCallback}
+          styles={{
+            options: {
+              primaryColor: 'hsl(338, 68%, 54%)',
+              zIndex: 10000,
+            },
+            tooltip: {
+              borderRadius: '0.5rem',
+              fontSize: '0.875rem',
+            },
+            buttonNext: {
+              borderRadius: '0.375rem',
+              fontSize: '0.875rem',
+              padding: '8px 16px',
+            },
+            buttonBack: {
+              color: 'hsl(215, 16%, 47%)',
+              fontSize: '0.875rem',
+            },
+            buttonSkip: {
+              color: 'hsl(215, 16%, 47%)',
+              fontSize: '0.875rem',
+            },
+          }}
+          locale={{
+            back: 'Back',
+            close: 'Close',
+            last: 'Done',
+            next: 'Next',
+            skip: 'Skip tour',
+          }}
+        />
+      )}
+
+      {/* Help / Tour button — only for authenticated users */}
+      {token && user && (
+        <div className="absolute top-4 right-4 z-[400]">
+          <FloatingActionButton
+            label="Start guided tour"
+            variant="muted"
+            size="sm"
+            onClick={() => setRunTour(true)}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3" />
+              <path d="M12 17h.01" />
+            </svg>
+          </FloatingActionButton>
+        </div>
+      )}
     </div>
   );
 }
