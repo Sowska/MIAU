@@ -50,6 +50,7 @@ export default function FilterPanel() {
             <label key={cat} className="flex items-center gap-2 cursor-pointer">
               <input
                 type="checkbox"
+                name={`filter-category-${cat}`}
                 checked={categories.includes(cat)}
                 onChange={() => handleCategoryChange(cat)}
                 className="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"

@@ -186,6 +186,7 @@ export default function FilterPanel({
                 >
                   <input
                     type="checkbox"
+                    name={`filter-category-${cat}`}
                     checked={selectedCategories.includes(cat)}
                     onChange={() => onCategoryChange && onCategoryChange(cat)}
                     className="h-4 w-4 rounded border-input text-primary bg-background focus:ring-2 focus:ring-ring focus:ring-offset-2 focus:ring-offset-background transition-colors"
@@ -201,6 +202,7 @@ export default function FilterPanel({
           {/* Author Search */}
           <FilterSection label="Artista">
             <Input
+              id="filter-author"
               type="text"
               size="sm"
               placeholder="Buscar por artista..."

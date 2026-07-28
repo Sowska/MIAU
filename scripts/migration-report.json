@@ -1,0 +1,13 @@
+{
+  "timestamp": "2026-07-28T06:45:05.152Z",
+  "totalRecords": 114,
+  "recordsWithImages": 110,
+  "successfulDownloads": 81,
+  "successfulUploads": 81,
+  "optimizedImages": 81,
+  "skippedRecords": 4,
+  "failedDownloads": 29,
+  "failedUploads": 0,
+  "duplicatedImages": 0,
+  "executionTimeMs": 1003267
+}

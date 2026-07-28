@@ -3,19 +3,7 @@
 const path = require('path');
 const os = require('os');
 const fsp = require('fs/promises');
-
-// vi.mock must be hoisted — define mockSend inside the factory
-vi.mock('@aws-sdk/client-s3', () => {
-  const mockSend = vi.fn().mockResolvedValue({});
-  return {
-    S3Client: vi.fn(() => ({ send: mockSend })),
-    PutObjectCommand: vi.fn((params) => params),
-    _mockSend: mockSend,
-  };
-});
-
-const { S3Client, PutObjectCommand, _mockSend } = require('@aws-sdk/client-s3');
-const { buildS3Key, buildS3Url, uploadToS3Migration } = require('./uploadToS3Migration');
+const { buildS3Key, buildS3Url, uploadToS3Migration, getContentType } = require('./uploadToS3Migration');
 
 describe('buildS3Key', () => {
   it('strips leading dot from extension and returns correct key', () => {
@@ -61,6 +49,36 @@ describe('buildS3Url', () => {
   });
 });
 
+describe('getContentType', () => {
+  it('returns image/jpeg for .jpg', () => {
+    expect(getContentType('.jpg')).toBe('image/jpeg');
+  });
+
+  it('returns image/jpeg for .jpeg', () => {
+    expect(getContentType('.jpeg')).toBe('image/jpeg');
+  });
+
+  it('returns image/png for .png', () => {
+    expect(getContentType('.png')).toBe('image/png');
+  });
+
+  it('returns image/webp for .webp', () => {
+    expect(getContentType('.webp')).toBe('image/webp');
+  });
+
+  it('returns image/gif for .gif', () => {
+    expect(getContentType('.gif')).toBe('image/gif');
+  });
+
+  it('returns application/octet-stream for unknown extension', () => {
+    expect(getContentType('.xyz')).toBe('application/octet-stream');
+  });
+
+  it('handles extensions without leading dot', () => {
+    expect(getContentType('png')).toBe('image/png');
+  });
+});
+
 describe('uploadToS3Migration', () => {
   const originalEnv = process.env;
   let tempDir;
@@ -76,11 +94,6 @@ describe('uploadToS3Migration', () => {
     tempDir = await fsp.mkdtemp(path.join(os.tmpdir(), 'upload-test-'));
     tempFile = path.join(tempDir, 'test-image.jpg');
     await fsp.writeFile(tempFile, Buffer.from('fake image content'));
-
-    _mockSend.mockClear();
-    _mockSend.mockResolvedValue({});
-    S3Client.mockClear();
-    PutObjectCommand.mockClear();
   });
 
   afterEach(async () => {
@@ -88,46 +101,34 @@ describe('uploadToS3Migration', () => {
     await fsp.rm(tempDir, { recursive: true, force: true });
   });
 
+  function createMockS3Client(sendResult = {}) {
+    const sendFn = vi.fn().mockResolvedValue(sendResult);
+    return { send: sendFn };
+  }
+
   it('returns success with URL on successful upload', async () => {
-    const result = await uploadToS3Migration(tempFile, 'my-mural', '.jpg');
+    const mockClient = createMockS3Client();
+    const result = await uploadToS3Migration(tempFile, 'my-mural', '.jpg', { s3Client: mockClient });
 
     expect(result.success).toBe(true);
     expect(result.url).toBe('https://test-bucket.s3.us-east-1.amazonaws.com/markers/marker-my-mural.jpg');
   });
 
-  it('creates S3Client with correct config from env vars', async () => {
-    await uploadToS3Migration(tempFile, 'test', '.png');
+  it('calls send on the S3 client with correct command params', async () => {
+    const mockClient = createMockS3Client();
+    await uploadToS3Migration(tempFile, 'mural-test', '.png', { s3Client: mockClient });
 
-    expect(S3Client).toHaveBeenCalledWith({
-      region: 'us-east-1',
-      credentials: {
-        accessKeyId: 'AKIAIOSFODNN7EXAMPLE',
-        secretAccessKey: 'wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY',
-      },
-    });
-  });
-
-  it('sends PutObjectCommand with correct parameters', async () => {
-    await uploadToS3Migration(tempFile, 'mural-test', '.png');
-
-    expect(PutObjectCommand).toHaveBeenCalledWith({
-      Bucket: 'test-bucket',
-      Key: 'markers/marker-mural-test.png',
-      Body: expect.any(Buffer),
-      ContentType: 'image/png',
-    });
-  });
-
-  it('calls send on the S3 client', async () => {
-    await uploadToS3Migration(tempFile, 'send-test', '.jpg');
-
-    expect(_mockSend).toHaveBeenCalledTimes(1);
+    expect(mockClient.send).toHaveBeenCalledTimes(1);
+    const command = mockClient.send.mock.calls[0][0];
+    expect(command.input.Bucket).toBe('test-bucket');
+    expect(command.input.Key).toBe('markers/marker-mural-test.png');
+    expect(command.input.ContentType).toBe('image/png');
+    expect(command.input.Body).toBeInstanceOf(Buffer);
   });
 
   it('returns error on S3 failure', async () => {
-    _mockSend.mockRejectedValueOnce(new Error('Access Denied'));
-
-    const result = await uploadToS3Migration(tempFile, 'fail-test', '.jpg');
+    const mockClient = { send: vi.fn().mockRejectedValue(new Error('Access Denied')) };
+    const result = await uploadToS3Migration(tempFile, 'fail-test', '.jpg', { s3Client: mockClient });
 
     expect(result.success).toBe(false);
     expect(result.error).toBe('Access Denied');
@@ -135,33 +136,42 @@ describe('uploadToS3Migration', () => {
   });
 
   it('returns error when file does not exist', async () => {
-    const result = await uploadToS3Migration('/nonexistent/path.jpg', 'no-file', '.jpg');
+    const mockClient = createMockS3Client();
+    const result = await uploadToS3Migration('/nonexistent/path.jpg', 'no-file', '.jpg', { s3Client: mockClient });
 
     expect(result.success).toBe(false);
     expect(result.error).toBeDefined();
   });
 
   it('sets correct content type for jpeg extension', async () => {
-    await uploadToS3Migration(tempFile, 'ct-test', '.jpeg');
+    const mockClient = createMockS3Client();
+    await uploadToS3Migration(tempFile, 'ct-test', '.jpeg', { s3Client: mockClient });
 
-    expect(PutObjectCommand).toHaveBeenCalledWith(
-      expect.objectContaining({ ContentType: 'image/jpeg' })
-    );
+    const command = mockClient.send.mock.calls[0][0];
+    expect(command.input.ContentType).toBe('image/jpeg');
   });
 
   it('sets correct content type for webp extension', async () => {
-    await uploadToS3Migration(tempFile, 'webp-test', '.webp');
+    const mockClient = createMockS3Client();
+    await uploadToS3Migration(tempFile, 'webp-test', '.webp', { s3Client: mockClient });
 
-    expect(PutObjectCommand).toHaveBeenCalledWith(
-      expect.objectContaining({ ContentType: 'image/webp' })
-    );
+    const command = mockClient.send.mock.calls[0][0];
+    expect(command.input.ContentType).toBe('image/webp');
   });
 
   it('falls back to application/octet-stream for unknown extensions', async () => {
-    await uploadToS3Migration(tempFile, 'unknown-test', '.xyz');
+    const mockClient = createMockS3Client();
+    await uploadToS3Migration(tempFile, 'unknown-test', '.xyz', { s3Client: mockClient });
 
-    expect(PutObjectCommand).toHaveBeenCalledWith(
-      expect.objectContaining({ ContentType: 'application/octet-stream' })
-    );
+    const command = mockClient.send.mock.calls[0][0];
+    expect(command.input.ContentType).toBe('application/octet-stream');
+  });
+
+  it('reads the file content as Buffer', async () => {
+    const mockClient = createMockS3Client();
+    await uploadToS3Migration(tempFile, 'buffer-test', '.jpg', { s3Client: mockClient });
+
+    const command = mockClient.send.mock.calls[0][0];
+    expect(command.input.Body.toString()).toBe('fake image content');
   });
 });
