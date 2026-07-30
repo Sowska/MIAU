@@ -2,6 +2,8 @@
 
 [Pruebe la página AQUI](https://miau-frontend.onrender.com/#/) (puede demorar hasta 50 segundos en cargar información)
 
+Para ver el documento de descripción técnica, [AQUÍ](https://docs.google.com/document/d/15EpcK9k0DG_LdXiThABaEci1Iq9WI1THLRjevm0SzoQ/edit?usp=sharing)
+
 Para ver el documento de descripción con imágenes, seleccione "MIAU - Project Document.pdf" en este repositorio.
 
 ## Tabla de Contenidos
