@@ -8,6 +8,9 @@ import AuthView from './views/AuthView';
 import ProfileView from './views/ProfileView';
 import NotFoundView from './views/NotFoundView';
 
+/** App icon URL (hosted on S3 — not stored locally) */
+const APP_ICON_URL = 'https://miau-art-assets-073868306855-us-east-2-an.s3.us-east-2.amazonaws.com/markers/miau-icon.png';
+
 /**
  * ============================================================================
  * APP — Root application component with simple hash-based routing
@@ -53,9 +56,9 @@ export default function App() {
 
   // Navbar config
   const navLinks = [
-    { label: 'Map', href: '#/', active: route === '/', onClick: () => navigate('/') },
+    { label: 'Ver Mapa', href: '#/', active: route === '/', onClick: () => navigate('/') },
     ...(token && user
-      ? [{ label: 'Profile', href: '#/profile', active: route === '/profile', onClick: () => navigate('/profile') }]
+      ? [{ label: 'Mi Perfil', href: '#/profile', active: route === '/profile', onClick: () => navigate('/profile') }]
       : []),
   ];
 
@@ -114,6 +117,12 @@ export default function App() {
     <div className="min-h-screen bg-background text-foreground">
       {/* Persistent Navbar */}
       <Navbar
+        brand={
+          <a href="#/" className="flex items-center gap-2">
+            <img src={APP_ICON_URL} alt="MIAU" className="h-8 w-auto" />
+            <span className="text-lg font-bold text-foreground tracking-tight">MIAU</span>
+          </a>
+        }
         links={navLinks}
         user={user}
         onLogin={handleLogin}

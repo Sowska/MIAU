@@ -250,7 +250,7 @@ input[type="search"]::-webkit-search-decoration {
   }
 }
 
-/* Move Leaflet attribution to bottom as footer on mobile */
+/* Move Leaflet attribution to bottom as footer */
 .leaflet-control-attribution {
   position: fixed !important;
   bottom: 0 !important;
@@ -266,17 +266,134 @@ input[type="search"]::-webkit-search-decoration {
   box-shadow: none !important;
 }
 
-@media (min-width: 640px) {
-  .leaflet-control-attribution {
-    position: absolute !important;
-    bottom: 0 !important;
-    left: auto !important;
-    right: 0 !important;
-    border-top: none;
-    border-radius: 4px 0 0 0 !important;
-    background: hsl(0 0% 100% / 0.8) !important;
-    text-align: right;
-    padding: 2px 6px !important;
-    font-size: 11px !important;
-  }
+/* ─── Custom Map Marker (MIAU Pin) ────────────────────────────────────────── */
+
+/* Reset DivIcon wrapper — Leaflet adds its own positioning */
+.miau-marker-wrapper {
+  background: none !important;
+  border: none !important;
+}
+
+/* Main marker container */
+.miau-marker {
+  position: relative;
+  width: 40px;
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Pin shape: circle with a pointed tail */
+.miau-marker__pin {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  border: 3px solid var(--accent-color, #6b7280);
+  background: #fff;
+  overflow: hidden;
+  box-shadow: none;
+  filter: drop-shadow(0 3px 4px rgba(0, 0, 0, 0.35));
+}
+
+/* Image fills the entire pin shape */
+.miau-marker__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: rotate(45deg) scale(1.4);
+  pointer-events: none;
+}
+
+/* Question mark / plus fallback */
+.miau-marker__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: rotate(45deg);
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent-color, #6b7280);
+  user-select: none;
+}
+
+/* Drop shadow beneath the pin */
+.miau-marker__shadow {
+  width: 14px;
+  height: 6px;
+  margin-top: 2px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+  filter: blur(1.5px);
+}
+
+/* ─── Marker Cluster (MIAU) ───────────────────────────────────────────────── */
+
+/* Reset leaflet-markercluster default wrapper */
+.miau-cluster-wrapper {
+  background: none !important;
+  border: none !important;
+}
+
+/* Cluster circle base */
+.miau-cluster {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: Inter, system-ui, sans-serif;
+  font-weight: 700;
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 200ms ease;
+}
+
+.miau-cluster:hover {
+  transform: scale(1.1);
+}
+
+/* Size variants — colors from the SunsetDark palette */
+.miau-cluster--small {
+  width: 36px;
+  height: 36px;
+  font-size: 13px;
+  background: #17e0b5;
+  border: 3px solid #fff;
+}
+
+.miau-cluster--medium {
+  width: 42px;
+  height: 42px;
+  font-size: 14px;
+  background: #46aea0; 
+  border: 3px solid #fff;
+}
+
+.miau-cluster--large {
+  width: 50px;
+  height: 50px;
+  font-size: 15px;
+  background: #045275;
+  border: 3.5px solid #fff;
+}
+
+/* Pulse ring on cluster hover for discoverability */
+.miau-cluster::after {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.miau-cluster:hover::after {
+  opacity: 0.35;
 }

@@ -140,4 +140,18 @@ async function deleteMarker(req, res, next) {
   }
 }
 
-module.exports = { listMarkers, getMarker, createMarker, updateMarker, deleteMarker };
+/**
+ * GET /markers/mine
+ * Returns all non-deleted markers owned by the authenticated user.
+ */
+async function listMyMarkers(req, res, next) {
+  try {
+    const markers = await Marker.find({ owner: req.user.userId, deletedAt: null })
+      .sort({ createdAt: -1 });
+    return res.status(200).json(markers);
+  } catch (err) {
+    next(err);
+  }
+}
+
+module.exports = { listMarkers, getMarker, createMarker, updateMarker, deleteMarker, listMyMarkers };

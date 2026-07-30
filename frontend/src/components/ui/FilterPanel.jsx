@@ -244,6 +244,7 @@ export default function FilterPanel({
                   type="date"
                   size="sm"
                   value={endDate || ''}
+                  max={new Date().toISOString().split('T')[0]}
                   onChange={(e) =>
                     onEndDateChange && onEndDateChange(e.target.value || null)
                   }

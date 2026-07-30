@@ -43,6 +43,8 @@
  * ============================================================================
  */
 
+import { useState } from 'react';
+import { GridLoader } from 'react-spinners';
 import Button from './Button';
 
 /** Default category → sunset color mapping */
@@ -82,14 +84,14 @@ export default function MarkerPopup({
     >
       {/* Thumbnail */}
       {imagePath && (
-        <div className="relative -mx-[1px] -mt-[1px] overflow-hidden rounded-t-md">
-          <img
-            src={resolveImageUrl(imagePath)}
-            alt={`Artwork: ${title}`}
-            className="w-full h-28 object-cover"
-            loading="lazy"
-          />
-        </div>
+        <ImageWithLoader
+          src={resolveImageUrl(imagePath)}
+          alt={`Artwork: ${title}`}
+          className="w-full h-28 object-cover"
+          containerClassName="relative -mx-[1px] -mt-[1px] overflow-hidden rounded-t-md"
+          loaderSize={8}
+          height="h-28"
+        />
       )}
 
       {/* Content */}
@@ -142,6 +144,39 @@ export default function MarkerPopup({
         </div>
       )}
     </article>
+  );
+}
+
+/* ─── Internal Components ────────────────────────────────────────────────── */
+
+/**
+ * Image with GridLoader spinner while loading.
+ * Resets loading state when src changes (e.g. switching markers).
+ */
+function ImageWithLoader({ src, alt, className, containerClassName, loaderSize = 8, height = 'h-28' }) {
+  const [loaded, setLoaded] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState(src);
+
+  // Reset loaded state when image source changes
+  if (src !== currentSrc) {
+    setCurrentSrc(src);
+    setLoaded(false);
+  }
+
+  return (
+    <div className={containerClassName}>
+      {!loaded && (
+        <div className={`flex items-center justify-center w-full ${height} bg-muted`}>
+          <GridLoader color="hsl(338, 68%, 54%)" size={loaderSize} />
+        </div>
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={`${className} ${loaded ? '' : 'hidden'}`}
+        onLoad={() => setLoaded(true)}
+      />
+    </div>
   );
 }
 

@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { GridLoader } from 'react-spinners';
 import Button from './Button';
 
 /**
@@ -191,14 +192,14 @@ export default function MarkerDetailDrawer({
           <div className="divide-y divide-border">
             {/* Image */}
             {marker.imagePath && (
-              <div className="relative">
-                <img
-                  src={resolveImageUrl(marker.imagePath)}
-                  alt={`Artwork: ${marker.title}`}
-                  className="w-full h-52 sm:h-64 object-cover"
-                  loading="lazy"
-                />
-              </div>
+              <ImageWithLoader
+                src={resolveImageUrl(marker.imagePath)}
+                alt={`Artwork: ${marker.title}`}
+                className="w-full h-52 sm:h-64 object-cover"
+                containerClassName="relative"
+                loaderSize={12}
+                height="h-52 sm:h-64"
+              />
             )}
 
             {/* Metadata */}
@@ -322,6 +323,39 @@ function DrawerSkeleton() {
         <div className="h-4 w-2/3 rounded bg-muted" />
       </div>
       <div className="h-20 w-full rounded bg-muted" />
+    </div>
+  );
+}
+
+/* ─── Internal Components: Image Loader ──────────────────────────────────── */
+
+/**
+ * Image with GridLoader spinner while loading.
+ * Resets loading state when src changes (e.g. switching markers).
+ */
+function ImageWithLoader({ src, alt, className, containerClassName, loaderSize = 12, height = 'h-52 sm:h-64' }) {
+  const [loaded, setLoaded] = useState(false);
+  const [currentSrc, setCurrentSrc] = useState(src);
+
+  // Reset loaded state when image source changes
+  if (src !== currentSrc) {
+    setCurrentSrc(src);
+    setLoaded(false);
+  }
+
+  return (
+    <div className={containerClassName}>
+      {!loaded && (
+        <div className={`flex items-center justify-center w-full ${height} bg-muted`}>
+          <GridLoader color="hsl(338, 68%, 54%)" size={loaderSize} />
+        </div>
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={`${className} ${loaded ? '' : 'hidden'}`}
+        onLoad={() => setLoaded(true)}
+      />
     </div>
   );
 }

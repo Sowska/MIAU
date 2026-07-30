@@ -115,8 +115,13 @@ export default function AuthView({ onSuccess, onNavigateHome }) {
 
           {/* Brand */}
           <div className="pt-6 sm:pt-8 pb-2 text-center">
+            <img
+              src="https://miau-art-assets-073868306855-us-east-2-an.s3.us-east-2.amazonaws.com/markers/miau-icon.png"
+              alt="MIAU"
+              className="h-16 w-auto mx-auto mb-3"
+            />
             <h1 className="text-3xl font-bold text-foreground tracking-tight">MIAU</h1>
-            <p className="text-sm text-muted-foreground mt-1">Mapa de Arte Urbano</p>
+            <p className="text-sm text-muted-foreground mt-1">Mapa Interactivo de Arte Urbano</p>
           </div>
 
           {/* Form content */}

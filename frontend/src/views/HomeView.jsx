@@ -17,9 +17,9 @@ import {
 } from '../components/ui';
 
 import { Marker, Popup } from 'react-leaflet';
-import 'leaflet-extra-markers';
-import 'leaflet-extra-markers/dist/css/leaflet.extra-markers.min.css';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import L from 'leaflet';
+import { createMarkerIcon } from '../features/map/createMarkerIcon';
 import { applyFilters } from '../features/map/MarkerLayer';
 
 /**
@@ -74,18 +74,25 @@ const LEGEND_ITEMS = [
 
 const CATEGORIES = ['mural', 'graffiti', 'sculpture'];
 
-/** Create a colored ExtraMarkers icon based on marker category */
-function getCategoryIcon(category) {
-  const colorMap = {
-    mural: 'red',
-    graffiti: 'orange',
-    sculpture: 'purple',
-  };
-  return L.ExtraMarkers.icon({
-    icon: 'fa-map-marker',
-    markerColor: colorMap[category] || 'blue',
-    shape: 'circle',
-    prefix: '',
+/** Zoom level at which individual marker images become visible */
+const IMAGE_ZOOM_THRESHOLD = 15;
+
+/** Custom cluster icon generator — styled circle with count */
+function createClusterCustomIcon(cluster) {
+  const count = cluster.getChildCount();
+  let size = 'small';
+  let diameter = 36;
+  if (count >= 100) {
+    size = 'large';
+    diameter = 50;
+  } else if (count >= 10) {
+    size = 'medium';
+    diameter = 42;
+  }
+  return L.divIcon({
+    html: `<div class="miau-cluster miau-cluster--${size}"><span>${count}</span></div>`,
+    className: 'miau-cluster-wrapper',
+    iconSize: L.point(diameter, diameter),
   });
 }
 
@@ -118,6 +125,9 @@ export default function HomeView() {
   const [tempPin, setTempPin] = useState(null); // { lat, lng } for temporary creation pin
   const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
   const [markersAnimated, setMarkersAnimated] = useState(false);
+
+  // Zoom level for conditional image rendering
+  const [zoomLevel, setZoomLevel] = useState(13);
 
   // Search state
   const [searchQuery, setSearchQuery] = useState('');
@@ -181,6 +191,39 @@ export default function HomeView() {
   useEffect(() => {
     fetchMarkers();
   }, [fetchMarkers]);
+
+  // Fly to a specific marker if navigated from profile
+  useEffect(() => {
+    if (!loadingMarkers && mapRef.current && window.__miauFlyTo) {
+      const { lat, lng, markerId } = window.__miauFlyTo;
+      delete window.__miauFlyTo;
+      // Small delay to ensure map is ready
+      setTimeout(() => {
+        mapRef.current.flyTo([lat, lng], 16, { duration: 1 });
+        // Open the marker's popup after flyTo animation completes
+        if (markerId) {
+          const target = markers.find((m) => m._id === markerId);
+          if (target) {
+            setSelectedMarker(target);
+            // Find the Leaflet marker layer and open its popup
+            setTimeout(() => {
+              mapRef.current.eachLayer((layer) => {
+                if (layer.getLatLng) {
+                  const layerLatLng = layer.getLatLng();
+                  if (
+                    Math.abs(layerLatLng.lat - lat) < 0.00001 &&
+                    Math.abs(layerLatLng.lng - lng) < 0.00001
+                  ) {
+                    layer.openPopup();
+                  }
+                }
+              });
+            }, 1200);
+          }
+        }
+      }, 300);
+    }
+  }, [loadingMarkers, markers]);
 
   // Mark initial animation as complete after first load
   useEffect(() => {
@@ -248,6 +291,11 @@ export default function HomeView() {
   // ── Map interactions ──────────────────────────────────────────────────────
 
   function handleMapClick(latlng) {
+    // If a popup is open, close it instead of creating a new marker
+    if (selectedMarker) {
+      setSelectedMarker(null);
+      return;
+    }
     // Only open create form for authenticated users
     if (token && user) {
       setTempPin(latlng);
@@ -383,59 +431,74 @@ export default function HomeView() {
       <MapContainer
         mapRef={mapRef}
         onMapClick={handleMapClick}
+        onZoomEnd={(zoom) => setZoomLevel(zoom)}
         className="absolute inset-0"
       >
-        {/* Marker Layer with staggered drop-in and hover effects */}
-        {visibleMarkers.map((marker, index) => {
-          const position = [
-            marker.location.coordinates[1],
-            marker.location.coordinates[0],
-          ];
-          return (
-            <Marker
-              key={marker._id}
-              position={position}
-              icon={getCategoryIcon(marker.category)}
-              eventHandlers={{
-                click: () => handleMarkerClick(marker),
-                mouseover: (e) => {
-                  const el = e.target.getElement();
-                  if (el) el.classList.add('marker-hover');
-                },
-                mouseout: (e) => {
-                  const el = e.target.getElement();
-                  if (el) el.classList.remove('marker-hover');
-                },
-                add: (e) => {
-                  // Drop-in animation on initial load only
-                  if (!markersAnimated) {
+        {/* Clustered Marker Layer */}
+        <MarkerClusterGroup
+          chunkedLoading
+          iconCreateFunction={createClusterCustomIcon}
+          maxClusterRadius={60}
+          spiderfyOnMaxZoom
+          showCoverageOnHover={false}
+          zoomToBoundsOnClick
+          animate
+        >
+          {visibleMarkers.map((marker) => {
+            const position = [
+              marker.location.coordinates[1],
+              marker.location.coordinates[0],
+            ];
+            // Show image-filled pin only when zoomed in; otherwise simple colored pin
+            const showImage = zoomLevel >= IMAGE_ZOOM_THRESHOLD;
+            const icon = createMarkerIcon({
+              category: marker.category,
+              imagePath: showImage ? marker.imagePath : null,
+            });
+            return (
+              <Marker
+                key={marker._id}
+                position={position}
+                icon={icon}
+                eventHandlers={{
+                  click: () => handleMarkerClick(marker),
+                  popupclose: () => setSelectedMarker(null),
+                  mouseover: (e) => {
                     const el = e.target.getElement();
-                    if (el) {
-                      el.classList.add('marker-drop-in');
-                    }
-                  }
-                },
-              }}
-            >
-              <Popup>
-                <MarkerPopup
-                  marker={marker}
-                  onViewDetails={handleViewDetails}
-                />
-              </Popup>
-            </Marker>
-          );
-        })}
+                    if (el) el.classList.add('marker-hover');
+                  },
+                  mouseout: (e) => {
+                    const el = e.target.getElement();
+                    if (el) el.classList.remove('marker-hover');
+                  },
+                }}
+              >
+                <Popup>
+                  <MarkerPopup
+                    marker={marker}
+                    onViewDetails={handleViewDetails}
+                  />
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MarkerClusterGroup>
 
         {/* Temporary pin for marker creation (bounce animation) */}
         {tempPin && (
           <Marker
             position={[tempPin.lat, tempPin.lng]}
-            icon={L.ExtraMarkers.icon({
-              icon: 'fa-plus',
-              markerColor: 'green',
-              shape: 'star',
-              prefix: '',
+            icon={L.divIcon({
+              html: `<div class="miau-marker" style="--accent-color: #22c55e">
+                <div class="miau-marker__pin">
+                  <span class="miau-marker__placeholder">+</span>
+                </div>
+                <div class="miau-marker__shadow"></div>
+              </div>`,
+              className: 'miau-marker-wrapper',
+              iconSize: [40, 50],
+              iconAnchor: [20, 50],
+              popupAnchor: [0, -46],
             })}
             eventHandlers={{
               add: (e) => {
@@ -492,13 +555,10 @@ export default function HomeView() {
             variant="primary"
             size="lg"
             onClick={() => {
-              // Prompt user to click on map
-              // For now, open form at map center if no coordinates
-              if (mapRef.current) {
-                const center = mapRef.current.getCenter();
-                setClickCoordinates({ lat: center.lat, lng: center.lng });
-              }
+              // Open form without coordinates — user will search by address
+              setClickCoordinates(null);
               setEditingMarker(null);
+              setTempPin(null);
               setFormModalOpen(true);
             }}
           >

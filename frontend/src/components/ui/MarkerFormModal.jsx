@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import Button from './Button';
 import Input from './Input';
 
@@ -97,6 +97,14 @@ export default function MarkerFormModal({
   const [internalLoading, setInternalLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
 
+  // Address autocomplete state
+  const [addressQuery, setAddressQuery] = useState('');
+  const [addressSuggestions, setAddressSuggestions] = useState([]);
+  const [addressLoading, setAddressLoading] = useState(false);
+  const [selectedAddress, setSelectedAddress] = useState('');
+  const [resolvedCoords, setResolvedCoords] = useState(null);
+  const addressDebounceRef = useRef(null);
+
   const loading = externalLoading || internalLoading;
 
   // Populate form for edit mode
@@ -110,6 +118,10 @@ export default function MarkerFormModal({
       setImage(null);
       setErrors({});
       setSuccessMessage('');
+      setAddressQuery('');
+      setAddressSuggestions([]);
+      setSelectedAddress('');
+      setResolvedCoords(null);
     } else if (isOpen && !marker) {
       // Reset for create mode
       setTitle('');
@@ -120,8 +132,65 @@ export default function MarkerFormModal({
       setImage(null);
       setErrors({});
       setSuccessMessage('');
+      setAddressQuery('');
+      setAddressSuggestions([]);
+      setSelectedAddress('');
+      setResolvedCoords(null);
     }
   }, [isOpen, marker]);
+
+  // Nominatim geocoding search with debounce
+  const searchAddress = useCallback((query) => {
+    if (addressDebounceRef.current) clearTimeout(addressDebounceRef.current);
+    if (!query || query.length < 3) {
+      setAddressSuggestions([]);
+      return;
+    }
+    setAddressLoading(true);
+    addressDebounceRef.current = setTimeout(async () => {
+      try {
+        const params = new URLSearchParams({
+          q: query + ', San Luis, Argentina',
+          format: 'json',
+          addressdetails: '1',
+          limit: '5',
+          countrycodes: 'ar',
+          viewbox: '-67.35,-35.00,-65.00,-32.00',
+          bounded: '1',
+        });
+        const res = await fetch(`https://nominatim.openstreetmap.org/search?${params}`, {
+          headers: { 'Accept-Language': 'es' },
+        });
+        const data = await res.json();
+        setAddressSuggestions(
+          data.map((item) => ({
+            id: item.place_id,
+            label: item.display_name,
+            lat: parseFloat(item.lat),
+            lng: parseFloat(item.lon),
+          }))
+        );
+      } catch {
+        setAddressSuggestions([]);
+      } finally {
+        setAddressLoading(false);
+      }
+    }, 400);
+  }, []);
+
+  function handleAddressInput(value) {
+    setAddressQuery(value);
+    setSelectedAddress('');
+    setResolvedCoords(null);
+    searchAddress(value);
+  }
+
+  function handleAddressSelect(suggestion) {
+    setSelectedAddress(suggestion.label);
+    setAddressQuery(suggestion.label);
+    setResolvedCoords({ lat: suggestion.lat, lng: suggestion.lng });
+    setAddressSuggestions([]);
+  }
 
   // Focus trap: focus first input when opened
   useEffect(() => {
@@ -162,6 +231,10 @@ export default function MarkerFormModal({
     const newErrors = {};
     if (!title.trim()) newErrors.title = 'El título es obligatorio';
     if (!category) newErrors.category = 'La categoría es obligatoria';
+    // In create mode, we need coordinates from either map click or address selection
+    if (!isEdit && !coordinates && !resolvedCoords) {
+      newErrors.address = 'Seleccioná una dirección o hacé click en el mapa';
+    }
     return newErrors;
   }
 
@@ -181,9 +254,10 @@ export default function MarkerFormModal({
     if (date) formData.append('date', date);
     if (image) formData.append('image', image);
 
-    if (!isEdit && coordinates) {
-      formData.append('longitude', coordinates.lng);
-      formData.append('latitude', coordinates.lat);
+    if (!isEdit && (coordinates || resolvedCoords)) {
+      const coords = coordinates || resolvedCoords;
+      formData.append('longitude', coords.lng);
+      formData.append('latitude', coords.lat);
     }
 
     if (onSubmit) {
@@ -370,10 +444,61 @@ export default function MarkerFormModal({
             />
           </FormField>
 
-          {/* Coordinates display (create mode) */}
+          {/* Address Search (create mode only, when no map-click coordinates) */}
+          {!isEdit && (
+            <FormField
+              label="Ubicación"
+              htmlFor="modal-address"
+              error={errors.address}
+              required
+            >
+              <div className="relative">
+                <Input
+                  id="modal-address"
+                  type="text"
+                  value={addressQuery}
+                  onChange={(e) => handleAddressInput(e.target.value)}
+                  placeholder={coordinates ? 'Ubicación establecida por el mapa' : 'Buscar dirección o calle...'}
+                  disabled={!!coordinates}
+                  error={!!errors.address}
+                  aria-invalid={!!errors.address}
+                  aria-describedby={errors.address ? 'modal-address-error' : undefined}
+                  autoComplete="off"
+                />
+                {addressLoading && (
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground text-xs">
+                    ...
+                  </span>
+                )}
+                {/* Suggestions dropdown */}
+                {addressSuggestions.length > 0 && (
+                  <ul className="absolute left-0 right-0 top-full mt-1 z-50 bg-card border border-border rounded-md shadow-lg max-h-48 overflow-y-auto">
+                    {addressSuggestions.map((suggestion) => (
+                      <li key={suggestion.id}>
+                        <button
+                          type="button"
+                          onClick={() => handleAddressSelect(suggestion)}
+                          className="w-full text-left px-3 py-2 text-sm text-foreground hover:bg-accent transition-colors line-clamp-2"
+                        >
+                          {suggestion.label}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              {selectedAddress && !coordinates && (
+                <p className="text-xs text-muted-foreground mt-1 truncate">
+                  {resolvedCoords && `${resolvedCoords.lat.toFixed(5)}, ${resolvedCoords.lng.toFixed(5)}`}
+                </p>
+              )}
+            </FormField>
+          )}
+
+          {/* Coordinates display (create mode, from map click) */}
           {!isEdit && coordinates && (
             <div className="text-xs text-muted-foreground bg-muted rounded-md px-3 py-2">
-              Location: {coordinates.lat.toFixed(5)}, {coordinates.lng.toFixed(5)}
+              Ubicación: {coordinates.lat.toFixed(5)}, {coordinates.lng.toFixed(5)}
             </div>
           )}
 
