@@ -1,5 +1,7 @@
 # MIAU — Mapa Interactivo de Arte Urbano
 
+[Pruebe la página AQUI](https://miau-frontend.onrender.com/#/) (puede demorar hasta 50 segundos en cargar información)
+
 ## Tabla de Contenidos
 
 - [Descripcion General](#descripcion-general)
@@ -47,24 +49,25 @@ El proyecto sigue una arquitectura MERN (MongoDB, Express, React, Node.js) con u
 
 ## Funcionalidades
 
-- Mapa interactivo con marcadores geolocalizados de arte urbano.
-- Filtrado por categoria, autor y rango de fechas (en el cliente, sin llamadas extra al servidor).
-- Registro e inicio de sesion con JWT.
-- Creacion, edicion y eliminacion (soft delete) de marcadores.
-- Carga de imagenes con vista previa y almacenamiento en S3.
-- Sistema de contribuciones comunitarias (sugerencias de otros usuarios sobre marcadores existentes).
-- Diseno responsive y mobile-first.
-- Leyenda de categorias y panel de filtros flotante.
+Las funcionalidades son las comunes en aplicaciones GIS (Geographic Information System):
+
+- Filtros espaciales
+- Capas temáticas
+- Búsqueda geográfica
+- Popups enriquecidos
+- Leyendas dinámicas
+
+El dataset se ubtuvo desde Google Maps y fue curado mediante un pipeline de procesamiento en base a scripts.
 
 ## Contacto
 
 - **Nombre:** Sofia Losowski
-- **GitHub:** [github.com/Sowska]
+- **GitHub:** [github.com/Sowska](github.com/Sowska)
 - **Email:** losowskisofia@gmail.com
 
 ## Agradecimientos
 
-- [OpenStreetMap](https://www.openstreetmap.org/) por los tiles del mapa.
-- [Leaflet](https://leafletjs.com/) por la libreria de mapas interactivos.
-- [Render](https://render.com/) por el hosting.
-- [MongoDB Atlas](https://www.mongodb.com/atlas) por la base de datos en la nube.
+- [OpenStreetMap](https://www.openstreetmap.org/)
+- [Leaflet](https://leafletjs.com/)
+- [Render](https://render.com/)
+- [MongoDB Atlas](https://www.mongodb.com/atlas)
